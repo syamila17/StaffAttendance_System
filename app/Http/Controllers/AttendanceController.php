@@ -81,4 +81,48 @@ class AttendanceController extends Controller
 
         return back()->with('success', 'Check-out successful!');
     }
+
+    /**
+     * Update attendance status
+     */
+    public function updateStatus(Request $request)
+    {
+        $staffId = session('staff_id');
+        if (!$staffId) {
+            return back()->withErrors(['error' => 'Please login first']);
+        }
+
+        $validated = $request->validate([
+            'status' => 'required|in:present,absent,late,el,on leave,half day',
+            'date' => 'required|date',
+            'check_in_time' => 'nullable|date_format:H:i',
+            'check_out_time' => 'nullable|date_format:H:i',
+            'remarks' => 'nullable|string|max:255'
+        ]);
+
+        $attendance = Attendance::firstOrCreate(
+            [
+                'staff_id' => $staffId,
+                'attendance_date' => $validated['date']
+            ],
+            [
+                'status' => $validated['status'],
+                'check_in_time' => $validated['check_in_time'] ? $validated['check_in_time'] . ':00' : null,
+                'check_out_time' => $validated['check_out_time'] ? $validated['check_out_time'] . ':00' : null,
+                'remarks' => $validated['remarks'] ?? null
+            ]
+        );
+
+        // If record exists, update it
+        if ($attendance->wasRecentlyCreated === false) {
+            $attendance->update([
+                'status' => $validated['status'],
+                'check_in_time' => $validated['check_in_time'] ? $validated['check_in_time'] . ':00' : $attendance->check_in_time,
+                'check_out_time' => $validated['check_out_time'] ? $validated['check_out_time'] . ':00' : $attendance->check_out_time,
+                'remarks' => $validated['remarks'] ?? $attendance->remarks
+            ]);
+        }
+
+        return back()->with('success', 'Attendance status updated successfully!');
+    }
 }

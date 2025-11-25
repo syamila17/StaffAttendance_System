@@ -36,27 +36,201 @@
 
   <!-- Main Content -->
   <main class="flex-1 p-10 overflow-y-auto">
-    <h1 class="text-3xl font-bold mb-6">Welcome, {{ $staffName}}!</h1>
-    <p class="text-gray-200 text-lg">Email: {{$staffEmail}}.</p>
+    <h1 class="text-3xl font-bold mb-2">Welcome, {{ $staffName}}!</h1>
+    <p class="text-gray-200 text-lg mb-8">Email: {{ $staffEmail }}</p>
 
-    <!-- Example Dashboard Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-      <div class="bg-white/10 p-6 rounded-xl shadow-lg border border-white/20">
-        <h3 class="text-lg font-semibold mb-2">Today's Attendance</h3>
-        <p class="text-gray-300">Not yet recorded</p>
-      </div>
+    <!-- Today's Attendance Card -->
+    <div class="bg-white/10 p-6 rounded-xl shadow-lg border border-white/20 mb-8">
+      <h2 class="text-2xl font-semibold mb-4 flex items-center">
+        <i class="fas fa-calendar-check mr-2 text-green-400"></i>Today's Attendance
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        @if($todayAttendance)
+          <!-- Status -->
+          <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+            <p class="text-gray-300 text-sm mb-2">Status</p>
+            <p class="text-2xl font-bold capitalize 
+              @if($todayAttendance->status === 'present') text-green-400
+              @elseif($todayAttendance->status === 'absent') text-red-400
+              @elseif($todayAttendance->status === 'late') text-yellow-400
+              @elseif($todayAttendance->status === 'el') text-orange-400
+              @elseif($todayAttendance->status === 'on leave') text-blue-400
+              @elseif($todayAttendance->status === 'half day') text-purple-400
+              @else text-gray-400 @endif">
+              {{ ucfirst($todayAttendance->status) }}
+            </p>
+          </div>
 
-      <div class="bg-white/10 p-6 rounded-xl shadow-lg border border-white/20">
-        <h3 class="text-lg font-semibold mb-2">Total Days Present</h3>
-        <p class="text-gray-300">15 Days</p>
-      </div>
+          <!-- Check-in Time - Only show if Present -->
+          @if($todayAttendance->status === 'present')
+            <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+              <p class="text-gray-300 text-sm mb-2">Check-in Time</p>
+              <p class="text-2xl font-bold @if($todayAttendance->check_in_time) text-green-400 @else text-gray-400 @endif">
+                {{ $todayAttendance->check_in_time ?? '--:--' }}
+              </p>
+            </div>
 
-      <div class="bg-white/10 p-6 rounded-xl shadow-lg border border-white/20">
-        <h3 class="text-lg font-semibold mb-2">Next Schedule</h3>
-        <p class="text-gray-300">No upcoming schedule</p>
+            <!-- Check-out Time - Only show if Present -->
+            <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+              <p class="text-gray-300 text-sm mb-2">Check-out Time</p>
+              <p class="text-2xl font-bold @if($todayAttendance->check_out_time) text-blue-400 @else text-gray-400 @endif">
+                {{ $todayAttendance->check_out_time ?? '--:--' }}
+              </p>
+            </div>
+
+            <!-- Duration - Only show if Present -->
+            <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+              <p class="text-gray-300 text-sm mb-2">Duration</p>
+              @if($todayAttendance->check_in_time && $todayAttendance->check_out_time)
+                <p class="text-2xl font-bold text-purple-400">
+                  {{ \Carbon\Carbon::createFromFormat('H:i:s', $todayAttendance->check_in_time)->diffInHours(\Carbon\Carbon::createFromFormat('H:i:s', $todayAttendance->check_out_time)) }} hrs
+                </p>
+              @else
+                <p class="text-2xl font-bold text-gray-400">-</p>
+              @endif
+            </div>
+          @else
+            <!-- Show placeholder boxes for non-present status -->
+            <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+              <p class="text-gray-300 text-sm mb-2">Check-in Time</p>
+              <p class="text-2xl font-bold text-gray-500">--:--</p>
+            </div>
+
+            <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+              <p class="text-gray-300 text-sm mb-2">Check-out Time</p>
+              <p class="text-2xl font-bold text-gray-500">--:--</p>
+            </div>
+
+            <div class="bg-white/5 p-4 rounded-lg border border-white/10">
+              <p class="text-gray-300 text-sm mb-2">Duration</p>
+              <p class="text-2xl font-bold text-gray-500">-</p>
+            </div>
+          @endif
+        @else
+          <div class="col-span-4 bg-white/5 p-6 rounded-lg border border-white/10 text-center">
+            <i class="fas fa-info-circle mr-2 text-blue-400"></i>
+            <p class="text-gray-300">No attendance recorded yet for today</p>
+            <a href="{{ route('attendance.show') }}" class="text-red-400 hover:text-red-300 mt-2 inline-block">
+              <i class="fas fa-arrow-right mr-1"></i>Mark attendance now
+            </a>
+          </div>
+        @endif
       </div>
     </div>
-  </main>
 
-</body>
-</html>
+    <!-- Attendance Statistics -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="bg-white/10 p-6 rounded-xl shadow-lg border border-white/20">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-300 text-sm mb-1">Total Present</p>
+            <p class="text-3xl font-bold text-green-400">{{ $totalPresent }}</p>
+          </div>
+          <i class="fas fa-check-circle text-green-400/20 text-4xl"></i>
+        </div>
+      </div>
+
+      <div class="bg-white/10 p-6 rounded-xl shadow-lg border border-white/20">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-300 text-sm mb-1">Total Absent</p>
+            <p class="text-3xl font-bold text-red-400">{{ $totalAbsent }}</p>
+          </div>
+          <i class="fas fa-times-circle text-red-400/20 text-4xl"></i>
+        </div>
+      </div>
+
+      <div class="bg-white/10 p-6 rounded-xl shadow-lg border border-white/20">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-300 text-sm mb-1">Total Late</p>
+            <p class="text-3xl font-bold text-yellow-400">{{ $totalLate }}</p>
+          </div>
+          <i class="fas fa-clock text-yellow-400/20 text-4xl"></i>
+        </div>
+      </div>
+
+      <div class="bg-white/10 p-6 rounded-xl shadow-lg border border-white/20">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-300 text-sm mb-1">Quick Actions</p>
+            <a href="{{ route('attendance.show') }}" class="text-red-400 hover:text-red-300 font-semibold text-sm">
+              View Attendance <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+          </div>
+          <i class="fas fa-link text-red-400/20 text-4xl"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attendance History -->
+    <div class="bg-white/10 p-8 rounded-xl shadow-lg border border-white/20 mt-8">
+      <h2 class="text-2xl font-semibold mb-6 flex items-center">
+        <i class="fas fa-history mr-2 text-blue-400"></i>Attendance History (Last 30 Days)
+      </h2>
+
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-white/20">
+              <th class="text-left py-3 px-4">Date</th>
+              <th class="text-left py-3 px-4">Status</th>
+              <th class="text-left py-3 px-4">Check-in</th>
+              <th class="text-left py-3 px-4">Check-out</th>
+              <th class="text-left py-3 px-4">Duration</th>
+              <th class="text-left py-3 px-4">Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            @forelse($recentAttendance as $record)
+              <tr class="border-b border-white/10 hover:bg-white/5">
+                <td class="py-3 px-4">{{ $record->attendance_date->format('Y-m-d (l)') }}</td>
+                <td class="py-3 px-4">
+                  <span class="px-3 py-1 rounded-full text-sm font-medium
+                    @if($record->status === 'present') bg-green-500/20 text-green-300
+                    @elseif($record->status === 'absent') bg-red-500/20 text-red-300
+                    @elseif($record->status === 'late') bg-yellow-500/20 text-yellow-300
+                    @elseif($record->status === 'el') bg-orange-500/20 text-orange-300
+                    @elseif($record->status === 'on leave') bg-blue-500/20 text-blue-300
+                    @elseif($record->status === 'half day') bg-purple-500/20 text-purple-300
+                    @else bg-gray-500/20 text-gray-300 @endif">
+                    {{ ucfirst($record->status) }}
+                  </span>
+                </td>
+                <td class="py-3 px-4 text-sm">
+                  @if($record->status === 'present' && $record->check_in_time)
+                    <span class="text-green-300">{{ $record->check_in_time }}</span>
+                  @else
+                    <span class="text-gray-500">-</span>
+                  @endif
+                </td>
+                <td class="py-3 px-4 text-sm">
+                  @if($record->status === 'present' && $record->check_out_time)
+                    <span class="text-blue-300">{{ $record->check_out_time }}</span>
+                  @else
+                    <span class="text-gray-500">-</span>
+                  @endif
+                </td>
+                <td class="py-3 px-4 text-sm">
+                  @if($record->status === 'present' && $record->check_in_time && $record->check_out_time)
+                    <span class="text-purple-300">{{ \Carbon\Carbon::createFromFormat('H:i:s', $record->check_in_time)->diffInHours(\Carbon\Carbon::createFromFormat('H:i:s', $record->check_out_time)) }} hrs</span>
+                  @else
+                    <span class="text-gray-500">-</span>
+                  @endif
+                </td>
+                <td class="py-3 px-4 text-sm text-gray-400">
+                  {{ $record->remarks ? $record->remarks : '-' }}
+                </td>
+              </tr>
+            @empty
+              <tr>
+                <td colspan="6" class="py-6 text-center text-gray-400">
+                  <i class="fas fa-inbox mr-2"></i>No attendance records yet
+                </td>
+              </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
+    </div>

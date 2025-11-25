@@ -160,7 +160,7 @@
 
         <div class="mb-4">
           <label class="block text-sm mb-2">Status</label>
-          <select name="status" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded">
+          <select id="statusSelect" name="status" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-black" onchange="toggleTimeInputs()">
             <option value="present">Present</option>
             <option value="absent">Absent</option>
             <option value="late">Late</option>
@@ -168,7 +168,7 @@
           </select>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 mb-4">
+        <div id="timeInputsContainer" class="grid grid-cols-2 gap-4 mb-4">
           <div>
             <label class="block text-sm mb-2">Check-in</label>
             <input type="time" name="check_in_time" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded">
@@ -188,6 +188,9 @@
           <button type="submit" class="flex-1 px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded transition">
             Save
           </button>
+          <button type="button" onclick="resetForm()" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded transition">
+            Reset
+          </button>
           <button type="button" onclick="closeModal()" class="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded transition">
             Cancel
           </button>
@@ -200,11 +203,35 @@
     function openModal(staffId, staffName) {
       document.getElementById('staffId').value = staffId;
       document.getElementById('staffName').value = staffName;
+      document.getElementById('statusSelect').value = 'present';
       document.getElementById('modal').classList.remove('hidden');
+      toggleTimeInputs(); // Show time inputs by default
     }
 
     function closeModal() {
       document.getElementById('modal').classList.add('hidden');
+      resetForm();
+    }
+
+    function resetForm() {
+      document.getElementById('attendanceForm').reset();
+      document.getElementById('statusSelect').value = 'present';
+      toggleTimeInputs();
+    }
+
+    function toggleTimeInputs() {
+      const status = document.getElementById('statusSelect').value;
+      const timeInputsContainer = document.getElementById('timeInputsContainer');
+      const checkInInput = document.querySelector('input[name="check_in_time"]');
+      const checkOutInput = document.querySelector('input[name="check_out_time"]');
+
+      if (status === 'absent') {
+        timeInputsContainer.style.display = 'none';
+        checkInInput.value = '';
+        checkOutInput.value = '';
+      } else {
+        timeInputsContainer.style.display = 'grid';
+      }
     }
   </script>
 

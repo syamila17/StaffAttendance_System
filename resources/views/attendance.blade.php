@@ -94,7 +94,7 @@
         </div>
 
         <!-- Check-in/Check-out Buttons -->
-        <div class="flex gap-4">
+        <div class="flex gap-4 mb-8">
           @if(!$todayAttendance || !$todayAttendance->check_in_time)
             <form method="POST" action="{{ route('attendance.checkIn') }}" class="flex-1">
               @csrf
@@ -113,55 +113,74 @@
             </form>
           @endif
         </div>
-      </div>
 
-      <!-- Attendance History -->
-      <div class="bg-white/10 p-8 rounded-xl shadow-lg border border-white/20">
-        <h2 class="text-2xl font-semibold mb-6">Recent Attendance History</h2>
+        <!-- Status Selection Form -->
+        <div class="bg-white/5 p-6 rounded-lg border border-white/10 mb-8">
+          <h3 class="text-xl font-semibold mb-4 flex items-center">
+            <i class="fas fa-tasks mr-2 text-red-400"></i>Update Attendance Status
+          </h3>
 
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead>
-              <tr class="border-b border-white/20">
-                <th class="text-left py-3 px-4">Date</th>
-                <th class="text-left py-3 px-4">Check-in</th>
-                <th class="text-left py-3 px-4">Check-out</th>
-                <th class="text-left py-3 px-4">Status</th>
-                <th class="text-left py-3 px-4">Duration</th>
-              </tr>
-            </thead>
-            <tbody>
-              @forelse($recentAttendance as $record)
-                <tr class="border-b border-white/10 hover:bg-white/5">
-                  <td class="py-3 px-4">{{ $record->attendance_date->format('Y-m-d (l)') }}</td>
-                  <td class="py-3 px-4">{{ $record->check_in_time ?? '-' }}</td>
-                  <td class="py-3 px-4">{{ $record->check_out_time ?? '-' }}</td>
-                  <td class="py-3 px-4">
-                    <span class="px-3 py-1 rounded-full text-sm capitalize
-                      @if($record->status === 'present') bg-green-500/20 text-green-300
-                      @elseif($record->status === 'late') bg-yellow-500/20 text-yellow-300
-                      @elseif($record->status === 'leave') bg-blue-500/20 text-blue-300
-                      @else bg-red-500/20 text-red-300 @endif">
-                      {{ $record->status }}
-                    </span>
-                  </td>
-                  <td class="py-3 px-4">
-                    @if($record->check_in_time && $record->check_out_time)
-                      {{ \Carbon\Carbon::createFromFormat('H:i:s', $record->check_in_time)->diffInHours(\Carbon\Carbon::createFromFormat('H:i:s', $record->check_out_time)) }} hrs
-                    @else
-                      -
-                    @endif
-                  </td>
-                </tr>
-              @empty
-                <tr>
-                  <td colspan="5" class="py-6 text-center text-gray-400">
-                    <i class="fas fa-inbox mr-2"></i>No attendance records yet
-                  </td>
-                </tr>
-              @endforelse
-            </tbody>
-          </table>
+          <form method="POST" action="{{ route('attendance.updateStatus') }}" class="space-y-4">
+            @csrf
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Date -->
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Date</label>
+                <input type="date" name="date" value="{{ now()->format('Y-m-d') }}" required
+                  class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500">
+              </div>
+
+              <!-- Status -->
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Status</label>
+                <select name="status" required
+                  class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500">
+                  <option value="">-- Select Status --</option>
+                  <option value="present" @if($todayAttendance && $todayAttendance->status === 'present') selected @endif>✓ Present</option>
+                  <option value="absent" @if($todayAttendance && $todayAttendance->status === 'absent') selected @endif>✗ Absent</option>
+                  <option value="late" @if($todayAttendance && $todayAttendance->status === 'late') selected @endif>⏰ Late</option>
+                  <option value="el" @if($todayAttendance && $todayAttendance->status === 'el') selected @endif>📋 EL (Emergency Leave)</option>
+                  <option value="on leave" @if($todayAttendance && $todayAttendance->status === 'on leave') selected @endif>🏖️ On Leave</option>
+                  <option value="half day" @if($todayAttendance && $todayAttendance->status === 'half day') selected @endif>⏱️ Half Day</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Check-in and Check-out Times -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Check-in Time -->
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Check-in Time (Optional)</label>
+                <input type="time" name="check_in_time" value="{{ $todayAttendance && $todayAttendance->check_in_time ? $todayAttendance->check_in_time : '' }}"
+                  class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500">
+              </div>
+
+              <!-- Check-out Time -->
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Check-out Time (Optional)</label>
+                <input type="time" name="check_out_time" value="{{ $todayAttendance && $todayAttendance->check_out_time ? $todayAttendance->check_out_time : '' }}"
+                  class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500">
+              </div>
+            </div>
+
+            <!-- Remarks -->
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2">Remarks (Optional)</label>
+              <textarea name="remarks" rows="3" placeholder="Add any remarks or notes..."
+                class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500 placeholder-gray-500">{{ $todayAttendance && $todayAttendance->remarks ? $todayAttendance->remarks : '' }}</textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex gap-4">
+              <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 px-6 py-2 rounded-lg font-semibold transition">
+                <i class="fas fa-save mr-2"></i>Save Status
+              </button>
+              <button type="reset" class="flex-1 bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg font-semibold transition">
+                <i class="fas fa-undo mr-2"></i>Reset
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

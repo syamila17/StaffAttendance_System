@@ -7,9 +7,13 @@ use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StaffProfileController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AdminAttendanceController;
+use App\Http\Controllers\MetricsController;
 
 // HOME
 Route::get('/', fn() => redirect('/login'));
+
+// METRICS (Prometheus scraping)
+Route::get('/metrics', [MetricsController::class, 'index'])->name('metrics');
 
 // STAFF LOGIN
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -29,6 +33,7 @@ Route::middleware('staff.auth')->group(function () {
     Route::get('/attendance', [AttendanceController::class, 'show'])->name('attendance.show');
     Route::post('/attendance/check-in', [AttendanceController::class, 'checkIn'])->name('attendance.checkIn');
     Route::post('/attendance/check-out', [AttendanceController::class, 'checkOut'])->name('attendance.checkOut');
+    Route::post('/attendance/update-status', [AttendanceController::class, 'updateStatus'])->name('attendance.updateStatus');
 });
 
 // PROTECTED ADMIN ROUTES

@@ -9,6 +9,7 @@ class Attendance extends Model
 {
     use HasFactory;
 
+    protected $table = 'attendance';
     protected $fillable = [
         'staff_id',
         'attendance_date',
@@ -16,6 +17,10 @@ class Attendance extends Model
         'check_out_time',
         'status',
         'remarks',
+    ];
+
+    protected $casts = [
+        'attendance_date' => 'date',
     ];
 
     public function staff()
