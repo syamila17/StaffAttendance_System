@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Attendance System</title>
+    <title>Login - Sistem Kehadiran</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -32,9 +32,9 @@
             
             <!-- Logo/Header -->
             <div class="text-center mb-8">
-                <img src="{{ asset('images/utm_nobg.png') }}" alt="UTM Logo" class="w-36 h-28 mx-auto mb-4 drop-shadow-xl"> 
-                <h1 class="text-2xl font-bold font-old ">Attendance Record</h1>
-                <p class=" text-sl mt-2">Staff Portal</p>
+                <img src="{{ asset('images/UTMLOGO.png') }}" alt="UTM Logo" class="w-38 h-28 mx-auto mb-4 drop-shadow-xl"> 
+                <h1 class="text-2xl text-white drop-shadow-md ">REKOD KEHADIRAN STAFF</h1>
+                <p class=" text-sl mt-2">STAFF PORTAL</p>
             </div>
 
             @if(session('success'))
@@ -62,7 +62,7 @@
                 <!-- Email -->
                 <div>
                     <label class="block text-sm font-bold mb-2">
-                        <i class="fas fa-envelope mr-1"></i> Email
+                        <i class="fas fa-envelope mr-1"></i> EMAIL
                     </label>
                     <input 
                         type="email" 
@@ -70,7 +70,7 @@
                         value="{{ old('email') }}"
                         required 
                         class="w-full px-4 py-2 bg-white/40 text-black font-semibold placeholder-gray-700 border border-white/50 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-md transition"
-                        placeholder="Enter your email"
+                        placeholder="Masukkan Email"
                     >
 
 
@@ -82,7 +82,7 @@
                 <!-- Password -->
                 <div>
                     <label class="block text-sm font-bold mb-2">
-                        <i class="fas fa-lock mr-1"></i> Password
+                        <i class="fas fa-lock mr-1"></i> KATA LALUAN
                     </label>
                     <div class="relative">
                         <input 
@@ -91,7 +91,7 @@
                             name="password"
                             required 
                             class="w-full px-4 py-2 bg-white/40 text-black font-semibold placeholder-gray-700 border border-white/50 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-md transition"
-                            placeholder="Enter your password"
+                            placeholder="Masukkan Kata Laluan"
                         >
                         <button 
                             type="button" 
@@ -110,7 +110,7 @@
                 <div class="flex items-center justify-between">
                     <label class="flex items-center text-sm ">
                         <input type="checkbox" name="remember" class="w-4 h-4 text-red-500 border-white/40 bg-white/10 rounded focus:ring-red-400">
-                        <span class="ml-2">Remember me</span>
+                        <span class="ml-2">Ingat saya</span>
                     </label>
                 </div>
 
@@ -119,7 +119,7 @@
                     type="submit"
                     class="w-full bg-red-700/80 hover:bg-red-800/90 text-white py-3 rounded-lg font-bold shadow-lg hover:shadow-2xl transition duration-200 backdrop-blur-md "
                 >
-                    <i class="fas fa-sign-in-alt mr-2"></i> Login
+                    <i class="fas fa-sign-in-alt mr-2"></i> Log Masuk
                 </button>
 
                 <!-- Error & Success messages -->
@@ -130,7 +130,7 @@
         </div>
 
         <div class="text-center mt-6 text-gray-200 text-sm font-medium drop-shadow outlined-text">
-            <p>&copy; 2025 Attendance Management System. All rights reserved.</p>
+            <p>&copy; 2025 Sistem Pengurusan Kehadiran. Hak Cipta Terpelihara.</p>
         </div>
     </div>
 

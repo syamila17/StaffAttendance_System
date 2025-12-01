@@ -13,8 +13,12 @@
   <!-- Sidebar -->
   <aside class="w-64 bg-gradient-to-b from-red-900 to-red-950 shadow-lg p-6 space-y-6">
     <div class="flex items-center gap-3">
-      <div class="bg-white/20 w-12 h-12 rounded-lg flex items-center justify-center">
-        <i class="fas fa-user text-2xl text-white"></i>
+      <div class="bg-white/20 w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden">
+        @if($profile && !empty($profile->profile_image))
+          <img src="{{ asset('storage/' . $profile->profile_image) }}" alt="Profile" class="w-full h-full object-cover">
+        @else
+          <i class="fas fa-user text-2xl text-white"></i>
+        @endif
       </div>
       <div>
         <h2 class="text-lg font-bold">Staff Panel</h2>
@@ -26,6 +30,8 @@
       <a href="{{ route('staff.dashboard') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20"><i class="fas fa-home mr-2"></i>Dashboard</a>
       <a href="{{ route('attendance.show') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20"><i class="fas fa-calendar-check mr-2"></i>Attendance</a>
       <a href="{{ route('staff.profile') }}" class="block px-4 py-2 rounded-lg bg-white/20"><i class="fas fa-user-circle mr-2"></i>Profile</a>
+      <a href="{{ route('staff.apply-leave') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20"><i class="fas fa-calendar-times mr-2"></i>Apply Leave</a>
+      <a href="{{ route('staff.leave.status') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20"><i class="fas fa-list-check mr-2"></i>Leave Status</a>
       <a href="{{ route('staff.logout') }}" 
         class="block px-4 py-2 rounded-lg hover:bg-white/20 flex items-center">
         <i class="fas fa-sign-out-alt mr-2"></i> Logout

@@ -13,8 +13,12 @@
   <!-- Sidebar -->
   <aside class="w-64 bg-gradient-to-b from-red-900 to-red-950 shadow-lg p-6 space-y-6">
     <div class="flex items-center gap-3">
-      <div class="bg-white/20 w-12 h-12 rounded-lg flex items-center justify-center">
-        <i class="fas fa-user text-2xl text-white"></i>
+      <div class="bg-white/20 w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden">
+        @if($profile && !empty($profile->profile_image))
+          <img src="{{ asset('storage/' . $profile->profile_image) }}" alt="Profile" class="w-full h-full object-cover">
+        @else
+          <i class="fas fa-user text-2xl text-white"></i>
+        @endif
       </div>
       <div>
         <h2 class="text-lg font-bold">Staff Panel</h2>
@@ -26,6 +30,11 @@
       <a href="{{ route('staff.dashboard') }}" class="block px-4 py-2 rounded-lg bg-white/20"><i class="fas fa-home mr-2"></i>Dashboard</a>
       <a href="{{ route('attendance.show') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20"><i class="fas fa-calendar-check mr-2"></i>Attendance</a>
       <a href="{{ route('staff.profile') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20"><i class="fas fa-user-circle mr-2"></i>Profile</a>
+      <a href="{{ route('staff.apply-leave') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20"><i class="fas fa-calendar-times mr-2"></i>Apply Leave</a>
+      <a href="{{ route('staff.leave.status') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20 relative group">
+        <i class="fas fa-list-check mr-2"></i>Leave Status
+        <span id="notificationBadge" class="absolute top-1 right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden font-bold text-xs">0</span>
+      </a>
       <a href="{{ route('staff.logout') }}" 
         class="block px-4 py-2 rounded-lg hover:bg-white/20 flex items-center">
         <i class="fas fa-sign-out-alt mr-2"></i> Logout
@@ -67,7 +76,7 @@
             <div class="bg-white/5 p-4 rounded-lg border border-white/10">
               <p class="text-gray-300 text-sm mb-2">Check-in Time</p>
               <p class="text-2xl font-bold @if($todayAttendance->check_in_time) text-green-400 @else text-gray-400 @endif">
-                {{ $todayAttendance->check_in_time ?? '--:--' }}
+                {{ $todayAttendance->check_in_time ? substr($todayAttendance->check_in_time, 0, 5) : '--:--' }}
               </p>
             </div>
 
@@ -75,7 +84,7 @@
             <div class="bg-white/5 p-4 rounded-lg border border-white/10">
               <p class="text-gray-300 text-sm mb-2">Check-out Time</p>
               <p class="text-2xl font-bold @if($todayAttendance->check_out_time) text-blue-400 @else text-gray-400 @endif">
-                {{ $todayAttendance->check_out_time ?? '--:--' }}
+                {{ $todayAttendance->check_out_time ? substr($todayAttendance->check_out_time, 0, 5) : '--:--' }}
               </p>
             </div>
 
@@ -200,14 +209,14 @@
                 </td>
                 <td class="py-3 px-4 text-sm">
                   @if($record->status === 'present' && $record->check_in_time)
-                    <span class="text-green-300">{{ $record->check_in_time }}</span>
+                    <span class="text-green-300">{{ substr($record->check_in_time, 0, 5) }}</span>
                   @else
                     <span class="text-gray-500">-</span>
                   @endif
                 </td>
                 <td class="py-3 px-4 text-sm">
                   @if($record->status === 'present' && $record->check_out_time)
-                    <span class="text-blue-300">{{ $record->check_out_time }}</span>
+                    <span class="text-blue-300">{{ substr($record->check_out_time, 0, 5) }}</span>
                   @else
                     <span class="text-gray-500">-</span>
                   @endif
@@ -234,3 +243,34 @@
         </table>
       </div>
     </div>
+
+  </main>
+
+</body>
+
+<script>
+  // Fetch and display leave status update badge
+  async function loadNotificationBadge() {
+    try {
+      const response = await fetch('{{ route("staff.leave.notifications") }}');
+      const data = await response.json();
+      
+      const badge = document.getElementById('notificationBadge');
+      
+      if (data.count > 0) {
+        badge.textContent = data.count;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    } catch (error) {
+      console.error('Failed to load notification badge:', error);
+    }
+  }
+  
+  // Load badge on page load and refresh every 30 seconds
+  loadNotificationBadge();
+  setInterval(loadNotificationBadge, 30000);
+</script>
+
+</html>

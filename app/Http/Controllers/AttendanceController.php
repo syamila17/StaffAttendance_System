@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Attendance;
+use App\Models\StaffProfile;
 use Carbon\Carbon;
 
 class AttendanceController extends Controller
@@ -16,6 +17,9 @@ class AttendanceController extends Controller
         // ✅ No need to check - middleware already verified staff_id exists
         $staffId = session('staff_id');
 
+        // Get profile image
+        $profile = StaffProfile::where('staff_id', $staffId)->first();
+
         $today = Carbon::today();
         $todayAttendance = Attendance::where('staff_id', $staffId)
             ->whereDate('attendance_date', $today)
@@ -26,7 +30,7 @@ class AttendanceController extends Controller
             ->limit(30)
             ->get();
 
-        return view('attendance', compact('todayAttendance', 'recentAttendance'));
+        return view('attendance', compact('profile', 'todayAttendance', 'recentAttendance'));
     }
 
     /**

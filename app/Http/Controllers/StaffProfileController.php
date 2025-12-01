@@ -13,8 +13,9 @@ class StaffProfileController extends Controller
         // ✅ No need to check - middleware already verified staff_id exists
         $staffId = session('staff_id');
         $profile = StaffProfile::where('staff_id', $staffId)->first();
+        $staffName = session('staff_name');
 
-        return view('profile', compact('profile'));
+        return view('profile', compact('profile', 'staffName'));
     }
 
     public function update(Request $request)

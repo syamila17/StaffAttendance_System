@@ -14,6 +14,7 @@ class Staff extends Model
         'staff_name',
         'staff_email',
         'staff_password',
+        'department_id',
         'team_id',
         'created_at'
     ];

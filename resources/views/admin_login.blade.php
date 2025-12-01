@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Attendance System</title>
+    <title>Admin Login - Sistem Kehadiran</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -22,9 +22,9 @@
             <div class="p-8">
                 <!-- Logo/Header -->
                 <div class="text-center mb-8">
-                    <img src="{{ asset('images/utm_nobg.png') }}" alt="UTM Logo" class="w-36 h-28 mx-auto mb-4">
-                    <h1 class="text-2xl font-bold text-white drop-shadow-md">Attendance Management</h1>
-                    <p class="text-white text-sm mt-2 font-semibold drop-shadow-md">Admin Portal</p>
+                    <img src="{{ asset('images/UTMLOGO.png') }}" alt="UTM Logo" class="w-38 h-28 mx-auto mb-4">
+                    <h1 class="text-2xl text-white drop-shadow-md">PENGURUSAN KEHADIRAN STAFF</h1>
+                    <p class="text-white text-sm mt-2 font-semibold drop-shadow-md">ADMIN PORTAL</p>
                 </div>
                 @if (session('success'))
                     <div id="successMessage" 
@@ -54,7 +54,7 @@
                     <!-- Email -->
                     <div>
                         <label class="block text-white font-semibold mb-2 drop-shadow-md">
-                            <i class="fas fa-envelope mr-1"></i> Email
+                            <i class="fas fa-envelope mr-1"></i> EMAIL
                         </label>
                         <input 
                             type="email" 
@@ -62,7 +62,7 @@
                             value="{{ old('email') }}"
                             required 
                             class="w-full px-4 py-2 border border-white/60 rounded-lg bg-white/60 text-black font-semibold placeholder-gray-700 focus:ring-2 focus:ring-orange-400 focus:border-transparent transition"
-                            placeholder="Enter email"
+                            placeholder="Masukkan Email"
                         >
                         @error('email')
                             <p class="text-red-200 text-sm mt-1">{{ $message }}</p>
@@ -72,7 +72,7 @@
                     <!-- Password -->
                     <div>
                         <label class="block text-white font-semibold mb-2 drop-shadow-md">
-                            <i class="fas fa-lock mr-1"></i> Password
+                            <i class="fas fa-lock mr-1"></i> KATA LALUAN
                         </label>
                         <div class="relative">
                             <input 
@@ -81,7 +81,7 @@
                                 name="password"
                                 required 
                                 class="w-full px-4 py-2 border border-white/60 rounded-lg bg-white/60 text-black font-semibold placeholder-gray-700 focus:ring-2 focus:ring-orange-400 focus:border-transparent transition"
-                                placeholder="Enter password"
+                                placeholder="Masukkan Kata Laluan"
                             >
                             <button 
                                 type="button" 
@@ -102,7 +102,7 @@
                     <div class="flex items-center justify-between">
                         <label class="flex items-center">
                             <input type="checkbox" name="remember" class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500">
-                            <span class="ml-2 text-sm text-white font-semibold drop-shadow-md">Remember me</span>
+                            <span class="ml-2 text-sm text-white font-semibold drop-shadow-md">Ingat saya</span>
                         </label>
                     </div>
 
@@ -111,7 +111,7 @@
                         type="submit"
                         class="w-full bg-gradient-to-r from-[#8B0000] to-[#FF4500] hover:from-[#A52A2A] hover:to-[#FF6347] text-white py-3 rounded-lg transition duration-300 font-semibold shadow-lg hover:shadow-xl"
                     >
-                        <i class="fas fa-sign-in-alt mr-2"></i> Login
+                        <i class="fas fa-sign-in-alt mr-2"></i> Log Masuk
                     </button>
 
                     <!-- Error messages -->

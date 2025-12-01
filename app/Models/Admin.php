@@ -17,5 +17,12 @@ class Admin extends Model
         'admin_name',
         'admin_email',
         'admin_password',
+        'leave_notifications_viewed',
+        'leave_notifications_viewed_at',
+    ];
+
+    protected $casts = [
+        'leave_notifications_viewed' => 'boolean',
+        'leave_notifications_viewed_at' => 'datetime',
     ];
 }

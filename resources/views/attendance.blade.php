@@ -13,8 +13,12 @@
   <!-- Sidebar -->
   <aside class="w-64 bg-gradient-to-b from-red-900 to-red-950 shadow-lg p-6 space-y-6">
     <div class="flex items-center gap-3">
-      <div class="bg-white/20 w-12 h-12 rounded-lg flex items-center justify-center">
-        <i class="fas fa-user text-2xl text-white"></i>
+      <div class="bg-white/20 w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden">
+        @if($profile && !empty($profile->profile_image))
+          <img src="{{ asset('storage/' . $profile->profile_image) }}" alt="Profile" class="w-full h-full object-cover">
+        @else
+          <i class="fas fa-user text-2xl text-white"></i>
+        @endif
       </div>
       <div>
         <h2 class="text-lg font-bold">Staff Panel</h2>
@@ -26,6 +30,8 @@
       <a href="{{ route('staff.dashboard') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20"><i class="fas fa-home mr-2"></i>Dashboard</a>
       <a href="{{ route('attendance.show') }}" class="block px-4 py-2 rounded-lg bg-white/20"><i class="fas fa-calendar-check mr-2"></i>Attendance</a>
       <a href="{{ route('staff.profile') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20"><i class="fas fa-user-circle mr-2"></i>Profile</a>
+      <a href="{{ route('staff.apply-leave') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20"><i class="fas fa-calendar-times mr-2"></i>Apply Leave</a>
+      <a href="{{ route('staff.leave.status') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20"><i class="fas fa-list-check mr-2"></i>Leave Status</a>
       <a href="{{ route('staff.logout') }}" 
         class="block px-4 py-2 rounded-lg hover:bg-white/20 flex items-center">
         <i class="fas fa-sign-out-alt mr-2"></i> Logout
@@ -59,7 +65,7 @@
           <div class="bg-white/5 p-4 rounded-lg border border-white/10">
             <p class="text-gray-300 text-sm mb-2">Check-in Time</p>
             @if($todayAttendance && $todayAttendance->check_in_time)
-              <p class="text-2xl font-bold text-green-400">{{ $todayAttendance->check_in_time }}</p>
+              <p class="text-2xl font-bold text-green-400">{{ substr($todayAttendance->check_in_time, 0, 5) }}</p>
               <p class="text-xs text-gray-400 mt-1">Checked in</p>
             @else
               <p class="text-2xl font-bold text-gray-400">--:--</p>
@@ -71,7 +77,7 @@
           <div class="bg-white/5 p-4 rounded-lg border border-white/10">
             <p class="text-gray-300 text-sm mb-2">Check-out Time</p>
             @if($todayAttendance && $todayAttendance->check_out_time)
-              <p class="text-2xl font-bold text-blue-400">{{ $todayAttendance->check_out_time }}</p>
+              <p class="text-2xl font-bold text-blue-400">{{ substr($todayAttendance->check_out_time, 0, 5) }}</p>
               <p class="text-xs text-gray-400 mt-1">Checked out</p>
             @else
               <p class="text-2xl font-bold text-gray-400">--:--</p>
@@ -134,32 +140,33 @@
               <!-- Status -->
               <div>
                 <label class="block text-sm font-medium text-gray-300 mb-2">Status</label>
-                <select name="status" required
-                  class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500">
-                  <option value="">-- Select Status --</option>
-                  <option value="present" @if($todayAttendance && $todayAttendance->status === 'present') selected @endif>✓ Present</option>
-                  <option value="absent" @if($todayAttendance && $todayAttendance->status === 'absent') selected @endif>✗ Absent</option>
-                  <option value="late" @if($todayAttendance && $todayAttendance->status === 'late') selected @endif>⏰ Late</option>
-                  <option value="el" @if($todayAttendance && $todayAttendance->status === 'el') selected @endif>📋 EL (Emergency Leave)</option>
-                  <option value="on leave" @if($todayAttendance && $todayAttendance->status === 'on leave') selected @endif>🏖️ On Leave</option>
-                  <option value="half day" @if($todayAttendance && $todayAttendance->status === 'half day') selected @endif>⏱️ Half Day</option>
+                <select id="statusSelect" name="status" required onchange="toggleTimeInputs()"
+                  class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500"
+                  style="color-scheme: dark;">
+                  <option value="" style="color: gray;">-- Select Status --</option>
+                  <option value="present" style="color: black;" @if($todayAttendance && $todayAttendance->status === 'present') selected @endif>✓ Present</option>
+                  <option value="absent" style="color: black;" @if($todayAttendance && $todayAttendance->status === 'absent') selected @endif>✗ Absent</option>
+                  <option value="late" style="color: black;" @if($todayAttendance && $todayAttendance->status === 'late') selected @endif>⏰ Late</option>
+                  <option value="el" style="color: black;" @if($todayAttendance && $todayAttendance->status === 'el') selected @endif>📋 EL (Emergency Leave)</option>
+                  <option value="on leave" style="color: black;" @if($todayAttendance && $todayAttendance->status === 'on leave') selected @endif>🏖️ On Leave</option>
+                  <option value="half day" style="color: black;" @if($todayAttendance && $todayAttendance->status === 'half day') selected @endif>⏱️ Half Day</option>
                 </select>
               </div>
             </div>
 
             <!-- Check-in and Check-out Times -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div id="timeInputsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <!-- Check-in Time -->
               <div>
                 <label class="block text-sm font-medium text-gray-300 mb-2">Check-in Time (Optional)</label>
-                <input type="time" name="check_in_time" value="{{ $todayAttendance && $todayAttendance->check_in_time ? $todayAttendance->check_in_time : '' }}"
+                <input type="time" name="check_in_time" value="{{ $todayAttendance && $todayAttendance->check_in_time ? substr($todayAttendance->check_in_time, 0, 5) : '' }}"
                   class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500">
               </div>
 
               <!-- Check-out Time -->
               <div>
                 <label class="block text-sm font-medium text-gray-300 mb-2">Check-out Time (Optional)</label>
-                <input type="time" name="check_out_time" value="{{ $todayAttendance && $todayAttendance->check_out_time ? $todayAttendance->check_out_time : '' }}"
+                <input type="time" name="check_out_time" value="{{ $todayAttendance && $todayAttendance->check_out_time ? substr($todayAttendance->check_out_time, 0, 5) : '' }}"
                   class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500">
               </div>
             </div>
@@ -176,8 +183,8 @@
               <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 px-6 py-2 rounded-lg font-semibold transition">
                 <i class="fas fa-save mr-2"></i>Save Status
               </button>
-              <button type="reset" class="flex-1 bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg font-semibold transition">
-                <i class="fas fa-undo mr-2"></i>Reset
+              <button type="button" onclick="resetAttendanceForm()" class="flex-1 bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-semibold transition">
+                <i class="fas fa-redo mr-2"></i>Clear All
               </button>
             </div>
           </form>
@@ -185,6 +192,47 @@
       </div>
     </div>
   </main>
+
+  <script>
+    function toggleTimeInputs() {
+      const status = document.getElementById('statusSelect').value;
+      const timeInputsContainer = document.getElementById('timeInputsContainer');
+      const checkInInput = document.querySelector('input[name="check_in_time"]');
+      const checkOutInput = document.querySelector('input[name="check_out_time"]');
+
+      if (status === 'absent') {
+        timeInputsContainer.style.display = 'none';
+        checkInInput.value = '';
+        checkOutInput.value = '';
+      } else {
+        timeInputsContainer.style.display = 'grid';
+      }
+    }
+
+    function resetAttendanceForm() {
+      const form = document.querySelector('form');
+      // Reset all form fields
+      form.reset();
+      // Reset date to today's date
+      const today = new Date().toISOString().split('T')[0];
+      document.querySelector('input[name="date"]').value = today;
+      // Reset status to empty
+      document.getElementById('statusSelect').value = '';
+      // Clear remarks textarea
+      document.querySelector('textarea[name="remarks"]').value = '';
+      // Show time inputs
+      const timeInputsContainer = document.getElementById('timeInputsContainer');
+      timeInputsContainer.style.display = 'grid';
+      // Clear time inputs
+      document.querySelector('input[name="check_in_time"]').value = '';
+      document.querySelector('input[name="check_out_time"]').value = '';
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      toggleTimeInputs();
+    });
+  </script>
 
 </body>
 </html>

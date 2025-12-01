@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- UPDATED: Check-in/out hidden for Absent, Reset button added, Status text is black -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -27,11 +28,20 @@
         <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20 transition">
           <i class="fas fa-home mr-2"></i>Dashboard
         </a>
+        <a href="{{ route('admin.staff.index') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20 transition">
+          <i class="fas fa-users mr-2"></i>Staff Management
+        </a>
         <a href="{{ route('admin.attendance') }}" class="block px-4 py-2 rounded-lg bg-white/30">
           <i class="fas fa-calendar-check mr-2"></i>Attendance
         </a>
         <a href="{{ route('admin.attendance.report') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20 transition">
           <i class="fas fa-chart-bar mr-2"></i>Reports
+        </a>
+        <a href="{{ route('admin.departments') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20 transition">
+          <i class="fas fa-building mr-2"></i>Departments
+        </a>
+        <a href="{{ route('admin.leave.requests') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20 transition">
+          <i class="fas fa-calendar-times mr-2"></i>Leave Requests
         </a>
         <a href="{{ route('admin.logout') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20 transition">
           <i class="fas fa-sign-out-alt mr-2"></i>Logout
@@ -55,7 +65,7 @@
         <div class="mb-8 flex gap-4">
           <form method="GET" action="{{ route('admin.attendance') }}" class="flex gap-4">
             <input type="date" name="date" value="{{ $selectedDate }}" 
-              class="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg">
+              class="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white">
             <button type="submit" class="px-6 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg transition">
               <i class="fas fa-search mr-2"></i>Filter
             </button>
@@ -66,7 +76,7 @@
         <div class="grid grid-cols-5 gap-4 mb-8">
           <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
             <p class="text-gray-400 text-sm">Total Staff</p>
-            <p class="text-3xl font-bold">{{ $stats['total_staff'] }}</p>
+            <p class="text-3xl font-bold text-white">{{ $stats['total_staff'] }}</p>
           </div>
           <div class="bg-green-900/30 p-4 rounded-lg border border-green-700">
             <p class="text-green-300 text-sm">Present</p>
@@ -87,7 +97,7 @@
         </div>
 
         <!-- Attendance Table -->
-        <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+        <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden shadow-sm">
           <table class="w-full">
             <thead class="bg-gray-700 border-b border-gray-600">
               <tr>
@@ -120,8 +130,8 @@
                       <span class="px-3 py-1 rounded-full text-sm bg-gray-600 text-gray-300">No Record</span>
                     @endif
                   </td>
-                  <td class="px-6 py-4">{{ $attendance->check_in_time ?? '-' }}</td>
-                  <td class="px-6 py-4">{{ $attendance->check_out_time ?? '-' }}</td>
+                  <td class="px-6 py-4">{{ $attendance && $attendance->check_in_time ? substr($attendance->check_in_time, 0, 5) : '-' }}</td>
+                  <td class="px-6 py-4">{{ $attendance && $attendance->check_out_time ? substr($attendance->check_out_time, 0, 5) : '-' }}</td>
                   <td class="px-6 py-4">
                     <button onclick="openModal({{ $person->staff_id }}, '{{ $person->staff_name }}')" 
                       class="px-3 py-1 bg-orange-600 hover:bg-orange-700 rounded text-sm transition">
@@ -160,11 +170,11 @@
 
         <div class="mb-4">
           <label class="block text-sm mb-2">Status</label>
-          <select id="statusSelect" name="status" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-black" onchange="toggleTimeInputs()">
-            <option value="present">Present</option>
-            <option value="absent">Absent</option>
-            <option value="late">Late</option>
-            <option value="leave">Leave</option>
+          <select id="statusSelect" name="status" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-black font-semibold" onchange="toggleTimeInputs()">
+            <option value="present" class="text-black">Present</option>
+            <option value="absent" class="text-black">Absent</option>
+            <option value="late" class="text-black">Late</option>
+            <option value="leave" class="text-black">Leave</option>
           </select>
         </div>
 
@@ -214,8 +224,19 @@
     }
 
     function resetForm() {
-      document.getElementById('attendanceForm').reset();
+      const form = document.getElementById('attendanceForm');
+      // Clear all input fields
+      const inputs = form.querySelectorAll('input[type="text"], input[type="time"], textarea');
+      inputs.forEach(input => {
+        if (input.name !== 'staff_id' && input.name !== 'attendance_date') {
+          input.value = '';
+        }
+      });
+      // Reset status to present
       document.getElementById('statusSelect').value = 'present';
+      // Clear remarks
+      document.querySelector('textarea[name="remarks"]').value = '';
+      // Show time inputs
       toggleTimeInputs();
     }
 
