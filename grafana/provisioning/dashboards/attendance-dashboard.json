@@ -1,0 +1,208 @@
+{
+  "dashboard": {
+    "title": "Staff Attendance Statistics",
+    "tags": ["attendance", "real-time"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 0,
+    "refresh": "10s",
+    "time": {
+      "from": "now-7d",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Total Present Today",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "attendance_present_today",
+            "refId": "A",
+            "legendFormat": "Present"
+          }
+        ],
+        "options": {
+          "orientation": "auto",
+          "textMode": "auto",
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "textAlignment": "auto"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"color": "green", "value": 0}
+              ]
+            },
+            "custom": {"hideFrom": {"tooltip": false, "viz": false, "legend": false}}
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Total Absent Today",
+        "type": "stat",
+        "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "attendance_absent_today",
+            "refId": "A",
+            "legendFormat": "Absent"
+          }
+        ],
+        "options": {
+          "orientation": "auto",
+          "textMode": "auto",
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "textAlignment": "auto"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"color": "red", "value": 0}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Total Late Today",
+        "type": "stat",
+        "gridPos": {"x": 12, "y": 0, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "attendance_late_today",
+            "refId": "A",
+            "legendFormat": "Late"
+          }
+        ],
+        "options": {
+          "orientation": "auto",
+          "textMode": "auto",
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "textAlignment": "auto"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"color": "yellow", "value": 0}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Total On Leave Today",
+        "type": "stat",
+        "gridPos": {"x": 18, "y": 0, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "attendance_leave_today",
+            "refId": "A",
+            "legendFormat": "Leave"
+          }
+        ],
+        "options": {
+          "orientation": "auto",
+          "textMode": "auto",
+          "colorMode": "background",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "textAlignment": "auto"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "thresholds"},
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"color": "blue", "value": 0}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Attendance Status Breakdown",
+        "type": "piechart",
+        "gridPos": {"x": 0, "y": 4, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "attendance_by_status",
+            "refId": "A",
+            "legendFormat": "{{status}}"
+          }
+        ],
+        "options": {
+          "pieType": "pie",
+          "displayLabels": ["name", "percent"],
+          "legend": {"displayMode": "table", "placement": "right"}
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "mappings": [],
+            "custom": {"hideFrom": {"tooltip": false, "viz": false, "legend": false}}
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "Daily Attendance Trend (Last 7 Days)",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 4, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "attendance_daily_present",
+            "refId": "A",
+            "legendFormat": "Present"
+          },
+          {
+            "expr": "attendance_daily_absent",
+            "refId": "B",
+            "legendFormat": "Absent"
+          },
+          {
+            "expr": "attendance_daily_late",
+            "refId": "C",
+            "legendFormat": "Late"
+          }
+        ],
+        "options": {
+          "legend": {"displayMode": "table", "placement": "right"},
+          "tooltip": {"mode": "multi"}
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {"mode": "palette-classic"},
+            "custom": {"lineWidth": 2, "fillOpacity": 10}
+          }
+        }
+      }
+    ]
+  },
+  "overwrite": true
+}

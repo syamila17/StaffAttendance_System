@@ -129,8 +129,8 @@
     </div>
 
     <!-- Attendance Statistics -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="bg-white/10 p-6 rounded-xl shadow-lg border border-white/20">
+    <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 gap-6">
+      <div class="bg-white/10 p-3 rounded-xl shadow-lg border border-white/20">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-gray-300 text-sm mb-1">Total Present</p>
@@ -201,7 +201,7 @@
                     @elseif($record->status === 'absent') bg-red-500/20 text-red-300
                     @elseif($record->status === 'late') bg-yellow-500/20 text-yellow-300
                     @elseif($record->status === 'el') bg-orange-500/20 text-orange-300
-                    @elseif($record->status === 'on leave') bg-blue-500/20 text-blue-300
+                    @elseif($record->status === 'leave') bg-blue-500/20 text-blue-300
                     @elseif($record->status === 'half day') bg-purple-500/20 text-purple-300
                     @else bg-gray-500/20 text-gray-300 @endif">
                     {{ ucfirst($record->status) }}
