@@ -1,10 +1,10 @@
-version: '3.8'
 
 services:
   mysql:
     image: mysql:8.0
     container_name: mysql_staff
     restart: always
+    init: true
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: staffAttend_data
@@ -16,11 +16,16 @@ services:
       - ./mysql_data:/var/lib/mysql
     networks:
       - staff-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
   phpmyadmin:
     image: phpmyadmin
     container_name: phpmyadmin_staff
     restart: always
+    init: true
     ports:
       - "8081:80"
     environment:
@@ -29,7 +34,8 @@ services:
       PMA_PASSWORD: root
       PMA_DB: staffAttend_data
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
       - staff-network
 
@@ -37,21 +43,21 @@ services:
     image: grafana/grafana:latest
     container_name: grafana_staff
     restart: always
+    init: true
     ports:
       - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ALLOW_EMBED_INITIATE=true    
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_SERVER_ROOT_URL=http://localhost:3000
-      - GF_DATABASE_TYPE=sqlite3
-      - GF_DATABASE_PATH=/var/lib/grafana/grafana.db
+      - GF_INSTALL_PLUGINS=grafana-clock-panel
     volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning
-      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
       - grafana_data:/var/lib/grafana
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
       - staff-network
 
