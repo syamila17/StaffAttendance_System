@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Staff Management</title>
+  <title>{{ trans('admin.staff_management') }}</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -12,52 +12,28 @@
 
   <!-- Sidebar -->
   <div class="flex h-screen">
-    <aside class="w-64 bg-gradient-to-b from-orange-600 to-orange-700 p-6 shadow-lg">
-      <div class="flex items-center gap-3 mb-8">
-        <div class="bg-white/20 w-12 h-12 rounded-lg flex items-center justify-center">
-          <i class="fas fa-user-shield text-2xl"></i>
-        </div>
-        <div>
-          <h2 class="text-lg font-bold">Admin Panel</h2>
-          <p class="text-xs text-gray-200">Management</p>
-        </div>
-      </div>
-
-      <nav class="space-y-3">
-        <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20 transition">
-          <i class="fas fa-home mr-2"></i>Dashboard
-        </a>
-        <a href="{{ route('admin.staff.index') }}" class="block px-4 py-2 rounded-lg bg-white/30">
-          <i class="fas fa-users mr-2"></i>Staff Management
-        </a>
-        <a href="{{ route('admin.attendance') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20 transition">
-          <i class="fas fa-calendar-check mr-2"></i>Attendance
-        </a>
-        <a href="{{ route('admin.attendance.report') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20 transition">
-          <i class="fas fa-chart-bar mr-2"></i>Reports
-        </a>
-        <a href="{{ route('admin.departments') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20 transition">
-          <i class="fas fa-building mr-2"></i>Departments
-        </a>
-        <a href="{{ route('admin.leave.requests') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20 transition">
-          <i class="fas fa-calendar-times mr-2"></i>Leave Requests
-        </a>
-        <a href="{{ route('admin.logout') }}" class="block px-4 py-2 rounded-lg hover:bg-white/20 transition">
-          <i class="fas fa-sign-out-alt mr-2"></i>Logout
-        </a>
-      </nav>
-    </aside>
+    @include('admin.layouts.sidebar')
 
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto p-8">
       <div class="max-w-7xl">
+        <!-- Language Switcher -->
+        <div class="flex justify-end mb-6 gap-2">
+          <a href="{{ route('admin.staff.index', ['lang' => 'en', 'search' => request('search'), 'page' => request('page')]) }}" class="px-4 py-2 rounded-lg font-semibold transition @if(app()->getLocale() === 'en') bg-orange-600 @else bg-gray-700 hover:bg-gray-600 @endif">
+            EN
+          </a>
+          <a href="{{ route('admin.staff.index', ['lang' => 'ms', 'search' => request('search'), 'page' => request('page')]) }}" class="px-4 py-2 rounded-lg font-semibold transition @if(app()->getLocale() === 'ms') bg-orange-600 @else bg-gray-700 hover:bg-gray-600 @endif">
+            MS
+          </a>
+        </div>
+
         <div class="flex justify-between items-center mb-8">
           <div>
-            <h1 class="text-4xl font-bold mb-2">Staff Management</h1>
-            <p class="text-gray-400">Manage all staff members in your organization</p>
+            <h1 class="text-4xl font-bold mb-2">{{ trans('admin.staff_management') }}</h1>
+            <p class="text-gray-400">{{ trans('admin.manage_staff') }}</p>
           </div>
           <a href="{{ route('admin.staff.create') }}" class="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-lg transition shadow-lg font-semibold">
-            <i class="fas fa-plus mr-2"></i>Add New Staff
+            <i class="fas fa-plus mr-2"></i>{{ trans('admin.add_new_staff') }}
           </a>
         </div>
 
@@ -70,10 +46,10 @@
         <!-- Search & Filter -->
         <div class="mb-8 flex gap-4">
           <form method="GET" action="{{ route('admin.staff.index') }}" class="flex gap-4 flex-1">
-            <input type="text" name="search" placeholder="Search by name or email..." 
+            <input type="text" name="search" placeholder="{{ trans('admin.search_placeholder') }}" value="{{ request('search') }}"
               class="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-500 transition">
             <button type="submit" class="px-6 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg transition font-semibold">
-              <i class="fas fa-search mr-2"></i>Search
+              <i class="fas fa-search mr-2"></i>{{ trans('admin.search') }}
             </button>
           </form>
         </div>
@@ -83,18 +59,23 @@
           <table class="w-full min-w-max">
             <thead class="bg-gray-700 border-b border-gray-600">
               <tr>
-                <th class="px-4 py-4 text-left text-lg font-semibold">Staff Name</th>
-                <th class="px-4 py-4 text-left text-lg font-semibold">Email</th>
-                <th class="px-4 py-4 text-left text-lg font-semibold">Department</th>
-                <th class="px-4 py-4 text-left text-lg font-semibold">Team</th>
+                <th class="px-4 py-4 text-left text-lg font-semibold">{{ trans('admin.name') }}</th>
+                <th class="px-4 py-4 text-left text-lg font-semibold">{{ trans('admin.email') }}</th>
+                <th class="px-4 py-4 text-left text-lg font-semibold">{{ trans('admin.department') }}</th>
+                <th class="px-4 py-4 text-left text-lg font-semibold">{{ trans('admin.team') }}</th>
                 <th class="px-4 py-4 text-left text-lg font-semibold">Created</th>
-                <th class="px-4 py-4 text-center text-lg font-semibold">Actions</th>
+                <th class="px-4 py-4 text-center text-lg font-semibold">{{ trans('admin.actions') }}</th>
               </tr>
             </thead>
             <tbody>
               @forelse($staff as $person)
                 <tr class="border-b border-gray-700 hover:bg-gray-750 transition">
-                  <td class="px-4 py-4 whitespace-nowrap text-base">{{ $person->staff_name }}</td>
+                  <td class="px-4 py-4 whitespace-nowrap text-base">
+                    <div class="flex flex-col">
+                      <span class="font-semibold">{{ $person->staff_name }}</span>
+                      <span class="text-gray-400 text-sm">{{ $person->staff_id }}</span>
+                    </div>
+                  </td>
                   <td class="px-4 py-4 whitespace-nowrap text-base">{{ $person->staff_email }}</td>
                   <td class="px-4 py-4 whitespace-nowrap">
                     @if($person->department)
@@ -141,7 +122,7 @@
                 <tr>
                   <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-base">
                     <i class="fas fa-inbox text-3xl mb-3"></i>
-                    <p>No staff members found</p>
+                    <p>{{ trans('admin.no_staff_found') }}</p>
                   </td>
                 </tr>
               @endforelse

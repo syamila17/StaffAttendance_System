@@ -13,82 +13,197 @@ class DepartmentTeamSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create Departments
-        $depIT = Department::create([
-            'department_name' => 'Information Technology',
-            'department_code' => 'IT',
-            'description' => 'IT Department responsible for system maintenance and development',
-            'location' => 'Building A, Floor 3',
-            'manager_id' => null, // Will be set later
-            'status' => 'active',
-        ]);
+        // Create the 3 Departments: DDA, DDS, DDI
+        $depDDA = Department::updateOrCreate(
+            ['department_code' => 'DDA'],
+            [
+                'department_name' => 'DDA',
+                'description' => 'Department DDA',
+                'location' => 'Building A',
+                'manager_id' => null,
+                'status' => 'active',
+            ]
+        );
 
-        $depHR = Department::create([
-            'department_name' => 'Human Resources',
-            'department_code' => 'HR',
-            'description' => 'HR Department handles recruitment and employee relations',
-            'location' => 'Building B, Floor 2',
-            'manager_id' => null,
-            'status' => 'active',
-        ]);
+        $depDDS = Department::updateOrCreate(
+            ['department_code' => 'DDS'],
+            [
+                'department_name' => 'DDS',
+                'description' => 'Department DDS',
+                'location' => 'Building B',
+                'manager_id' => null,
+                'status' => 'active',
+            ]
+        );
 
-        $depOps = Department::create([
-            'department_name' => 'Operations',
-            'department_code' => 'OPS',
-            'description' => 'Operations Department manages daily operations',
-            'location' => 'Building C, Floor 1',
-            'manager_id' => null,
-            'status' => 'active',
-        ]);
+        $depDDI = Department::updateOrCreate(
+            ['department_code' => 'DDI'],
+            [
+                'department_name' => 'DDI',
+                'description' => 'Department DDI',
+                'location' => 'Building C',
+                'manager_id' => null,
+                'status' => 'active',
+            ]
+        );
 
-        // Create Teams for IT Department
-        $teamBackend = Team::create([
-            'team_name' => 'Backend Development',
-            'team_code' => 'IT-BACKEND',
-            'department_id' => $depIT->department_id,
-            'team_lead_id' => null,
-            'description' => 'Backend development team',
-            'status' => 'active',
-        ]);
+        // DDA Teams (4 teams)
+        Team::updateOrCreate(
+            ['team_code' => 'DDA-NETWORK'],
+            [
+                'team_name' => 'Network',
+                'department_id' => $depDDA->department_id,
+                'team_lead_id' => null,
+                'description' => 'Network Team',
+                'status' => 'active',
+            ]
+        );
 
-        $teamFrontend = Team::create([
-            'team_name' => 'Frontend Development',
-            'team_code' => 'IT-FRONTEND',
-            'department_id' => $depIT->department_id,
-            'team_lead_id' => null,
-            'description' => 'Frontend development team',
-            'status' => 'active',
-        ]);
+        Team::updateOrCreate(
+            ['team_code' => 'DDA-CARE'],
+            [
+                'team_name' => 'Digital Care',
+                'department_id' => $depDDA->department_id,
+                'team_lead_id' => null,
+                'description' => 'Digital Care Team',
+                'status' => 'active',
+            ]
+        );
 
-        // Create Teams for HR Department
-        $teamRecruit = Team::create([
-            'team_name' => 'Recruitment',
-            'team_code' => 'HR-RECRUIT',
-            'department_id' => $depHR->department_id,
-            'team_lead_id' => null,
-            'description' => 'Recruitment team',
-            'status' => 'active',
-        ]);
+        Team::updateOrCreate(
+            ['team_code' => 'DDA-DATA'],
+            [
+                'team_name' => 'Digital Data',
+                'department_id' => $depDDA->department_id,
+                'team_lead_id' => null,
+                'description' => 'Digital Data Team',
+                'status' => 'active',
+            ]
+        );
 
-        $teamPayroll = Team::create([
-            'team_name' => 'Payroll',
-            'team_code' => 'HR-PAYROLL',
-            'department_id' => $depHR->department_id,
-            'team_lead_id' => null,
-            'description' => 'Payroll management team',
-            'status' => 'active',
-        ]);
+        Team::updateOrCreate(
+            ['team_code' => 'DDA-CENTRE'],
+            [
+                'team_name' => 'Data Centre',
+                'department_id' => $depDDA->department_id,
+                'team_lead_id' => null,
+                'description' => 'Data Centre Team',
+                'status' => 'active',
+            ]
+        );
 
-        // Create Teams for Operations Department
-        $teamSupport = Team::create([
-            'team_name' => 'Customer Support',
-            'team_code' => 'OPS-SUPPORT',
-            'department_id' => $depOps->department_id,
-            'team_lead_id' => null,
-            'description' => 'Customer support team',
-            'status' => 'active',
-        ]);
+        // DDS Teams (5 teams)
+        Team::updateOrCreate(
+            ['team_code' => 'DDS-STRATEGY'],
+            [
+                'team_name' => 'Digital Strategy & PMO',
+                'department_id' => $depDDS->department_id,
+                'team_lead_id' => null,
+                'description' => 'Digital Strategy & PMO Team',
+                'status' => 'active',
+            ]
+        );
 
-        echo "Departments and Teams seeded successfully!\n";
+        Team::updateOrCreate(
+            ['team_code' => 'DDS-RISK'],
+            [
+                'team_name' => 'Risk & Quality Management',
+                'department_id' => $depDDS->department_id,
+                'team_lead_id' => null,
+                'description' => 'Risk & Quality Management Team',
+                'status' => 'active',
+            ]
+        );
+
+        Team::updateOrCreate(
+            ['team_code' => 'DDS-COMPETENCY'],
+            [
+                'team_name' => 'Digital Competency',
+                'department_id' => $depDDS->department_id,
+                'team_lead_id' => null,
+                'description' => 'Digital Competency Team',
+                'status' => 'active',
+            ]
+        );
+
+        Team::updateOrCreate(
+            ['team_code' => 'DDS-CYBER'],
+            [
+                'team_name' => 'Cyber Security',
+                'department_id' => $depDDS->department_id,
+                'team_lead_id' => null,
+                'description' => 'Cyber Security Team',
+                'status' => 'active',
+            ]
+        );
+
+        Team::updateOrCreate(
+            ['team_code' => 'DDS-WEB'],
+            [
+                'team_name' => 'Web Management',
+                'department_id' => $depDDS->department_id,
+                'team_lead_id' => null,
+                'description' => 'Web Management Team',
+                'status' => 'active',
+            ]
+        );
+
+        // DDI Teams (5 teams)
+        Team::updateOrCreate(
+            ['team_code' => 'DDI-ACADEMIC'],
+            [
+                'team_name' => 'Academic',
+                'department_id' => $depDDI->department_id,
+                'team_lead_id' => null,
+                'description' => 'Academic Team',
+                'status' => 'active',
+            ]
+        );
+
+        Team::updateOrCreate(
+            ['team_code' => 'DDI-SUPPORT'],
+            [
+                'team_name' => 'Support System',
+                'department_id' => $depDDI->department_id,
+                'team_lead_id' => null,
+                'description' => 'Support System Team',
+                'status' => 'active',
+            ]
+        );
+
+        Team::updateOrCreate(
+            ['team_code' => 'DDI-MOBILE'],
+            [
+                'team_name' => 'Mobile Apps Research Computing',
+                'department_id' => $depDDI->department_id,
+                'team_lead_id' => null,
+                'description' => 'Mobile Apps Research Computing Team',
+                'status' => 'active',
+            ]
+        );
+
+        Team::updateOrCreate(
+            ['team_code' => 'DDI-FINANCE'],
+            [
+                'team_name' => 'Finance',
+                'department_id' => $depDDI->department_id,
+                'team_lead_id' => null,
+                'description' => 'Finance Team',
+                'status' => 'active',
+            ]
+        );
+
+        Team::updateOrCreate(
+            ['team_code' => 'DDI-HR'],
+            [
+                'team_name' => 'Human Resource',
+                'department_id' => $depDDI->department_id,
+                'team_lead_id' => null,
+                'description' => 'Human Resource Team',
+                'status' => 'active',
+            ]
+        );
+
+        echo "Departments (DDA, DDS, DDI) and Teams seeded successfully!\n";
     }
 }

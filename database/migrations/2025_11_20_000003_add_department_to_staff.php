@@ -12,12 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('staff', function (Blueprint $table) {
-            // Add department_id column
-            $table->unsignedBigInteger('department_id')->nullable()->after('team_id');
+            // Add department_id column only if it doesn't exist
+            if (!Schema::hasColumn('staff', 'department_id')) {
+                $table->unsignedBigInteger('department_id')->nullable()->after('team_id');
+            }
             
             // Add foreign keys
-            $table->foreign('team_id')->references('team_id')->on('teams')->onDelete('set null');
-            $table->foreign('department_id')->references('department_id')->on('departments')->onDelete('set null');
+            if (!Schema::hasColumn('staff', 'team_id')) {
+                $table->foreign('team_id')->references('team_id')->on('teams')->onDelete('set null');
+            }
+            if (!Schema::hasColumn('staff', 'department_id')) {
+                $table->foreign('department_id')->references('department_id')->on('departments')->onDelete('set null');
+            }
         });
     }
 
@@ -27,9 +33,20 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('staff', function (Blueprint $table) {
-            $table->dropForeign(['team_id']);
-            $table->dropForeign(['department_id']);
-            $table->dropColumn('department_id');
+            // Safely drop foreign keys
+            $sm = Schema::getConnection()->getDoctrineSchemaManager();
+            $indexes = $sm->listTableForeignKeys('staff');
+            
+            foreach ($indexes as $index) {
+                if ($index->getLocalColumns() == ['team_id'] || $index->getLocalColumns() == ['department_id']) {
+                    $table->dropForeign($index->getName());
+                }
+            }
+            
+            // Drop column if it exists
+            if (Schema::hasColumn('staff', 'department_id')) {
+                $table->dropColumn('department_id');
+            }
         });
     }
 };

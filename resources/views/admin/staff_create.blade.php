@@ -99,8 +99,14 @@
             <!-- Password -->
             <div>
               <label class="block text-base font-semibold text-gray-300 mb-2"><i class="fas fa-lock mr-2"></i>Password *</label>
-              <input type="password" name="staff_password" required
-                class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-500 transition text-base">
+              <div class="relative">
+                <input type="password" id="staff_password" name="staff_password" required
+                  class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-500 transition text-base"
+                  oninput="checkPasswordMatch()">
+                <button type="button" class="absolute right-3 top-3 text-gray-400 hover:text-white transition" onclick="togglePasswordVisibility('staff_password', this)">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
               @error('staff_password')
                 <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
               @enderror
@@ -109,8 +115,18 @@
             <!-- Confirm Password -->
             <div>
               <label class="block text-base font-semibold text-gray-300 mb-2"><i class="fas fa-check-circle mr-2"></i>Confirm Password *</label>
-              <input type="password" name="staff_password_confirmation" required
-                class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-500 transition text-base">
+              <div class="relative">
+                <input type="password" id="staff_password_confirmation" name="staff_password_confirmation" required
+                  class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-500 transition text-base"
+                  oninput="checkPasswordMatch()">
+                <button type="button" class="absolute right-3 top-3 text-gray-400 hover:text-white transition" onclick="togglePasswordVisibility('staff_password_confirmation', this)">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+              <div id="passwordMatchWarning" class="hidden text-red-400 text-sm mt-1 flex items-center gap-2">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Passwords do not match</span>
+              </div>
               @error('staff_password_confirmation')
                 <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
               @enderror
@@ -181,6 +197,35 @@
     };
 
     console.log('Teams Data:', teamsData); // Debug log
+
+    // Toggle password visibility
+    function togglePasswordVisibility(fieldId, button) {
+      const field = document.getElementById(fieldId);
+      const icon = button.querySelector('i');
+      
+      if (field.type === 'password') {
+        field.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        field.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    // Check if passwords match
+    function checkPasswordMatch() {
+      const password = document.getElementById('staff_password').value;
+      const confirmation = document.getElementById('staff_password_confirmation').value;
+      const warningDiv = document.getElementById('passwordMatchWarning');
+      
+      if (confirmation.length > 0 && password !== confirmation) {
+        warningDiv.classList.remove('hidden');
+      } else {
+        warningDiv.classList.add('hidden');
+      }
+    }
 
     function loadTeams() {
       const departmentId = document.getElementById('departmentSelect').value;

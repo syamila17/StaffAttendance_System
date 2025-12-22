@@ -65,7 +65,7 @@
 
       <!-- Leave Request Form -->
       <div class="bg-white/10 p-8 rounded-xl border border-white/20 shadow-lg">
-        <form method="POST" action="{{ route('staff.leave.store') }}" class="space-y-6">
+        <form method="POST" action="{{ route('staff.leave.store') }}" class="space-y-6" enctype="multipart/form-data">
           @csrf
 
           <!-- Leave Type -->
@@ -76,7 +76,6 @@
               <option value="Annual Leave" style="color: black;">Annual Leave</option>
               <option value="Sick Leave" style="color: black;">Sick Leave</option>
               <option value="Emergency Leave" style="color: black;">Emergency Leave</option>
-              <option value="Personal Leave" style="color: black;">Personal Leave</option>
               <option value="Other" style="color: black;">Other</option>
             </select>
             @error('leave_type')
@@ -106,12 +105,38 @@
 
           <!-- Reason -->
           <div>
-            <label class="block text-sm font-semibold mb-3"><i class="fas fa-pen-fancy mr-2"></i>Reason (Optional)</label>
-            <textarea name="reason" rows="5" placeholder="Provide details about your leave request..." 
+            <label class="block text-sm font-semibold mb-3"><i class="fas fa-pen-fancy mr-2"></i>Reason <span id="reason-requirement" class="text-gray-300"></span></label>
+            <textarea name="reason" id="reason" rows="5" placeholder="Provide details about your leave request..." 
               class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-green-400 transition resize-none">{{ old('reason') }}</textarea>
             @error('reason')
               <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
             @enderror
+          </div>
+
+          <!-- Proof File Upload (conditional) -->
+          <div id="proof-file-container" style="display: none;">
+            <div>
+              <label class="block text-sm font-semibold mb-3">
+                <i class="fas fa-file-upload mr-2"></i>Upload Proof Document <span id="proof-requirement" class="text-red-400"></span>
+              </label>
+              <p class="text-xs text-gray-300 mb-3">
+                <span id="proof-hint"></span>
+              </p>
+              <div class="relative">
+                <input type="file" name="proof_file" id="proof_file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" 
+                  class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-green-400 transition"
+                  onchange="updateFileInfo()">
+                <p class="text-xs text-gray-400 mt-2">Accepted formats: PDF, JPG, PNG, DOC, DOCX (Max 5MB)</p>
+              </div>
+              <div id="file-info" class="mt-3 p-3 bg-blue-500/20 border border-blue-500 rounded-lg hidden">
+                <p class="text-blue-300 text-sm">
+                  <i class="fas fa-check-circle mr-2"></i>File selected: <span id="file-name"></span>
+                </p>
+              </div>
+              @error('proof_file')
+                <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
+              @enderror
+            </div>
           </div>
 
           <!-- Submit Button -->
@@ -128,5 +153,74 @@
     </div>
   </main>
 
-</body>
-</html>
+  <script>
+    const leaveTypeSelect = document.querySelector('select[name="leave_type"]');
+    const reasonField = document.getElementById('reason');
+    const reasonRequirement = document.getElementById('reason-requirement');
+    const proofFileContainer = document.getElementById('proof-file-container');
+    const proofFileInput = document.getElementById('proof_file');
+    const proofRequirement = document.getElementById('proof-requirement');
+    const proofHint = document.getElementById('proof-hint');
+
+    // Handle leave type change
+    leaveTypeSelect.addEventListener('change', function() {
+      const leaveType = this.value;
+      
+      // Handle reason field requirement
+      if (leaveType === 'Other') {
+        reasonField.required = true;
+        reasonRequirement.textContent = '*';
+        reasonField.placeholder = 'Provide details about your leave request(Required)';
+      } else {
+        reasonField.required = false;
+        reasonRequirement.textContent = '(Optional)';
+        reasonField.placeholder = 'Provide details about your leave request...';
+      }
+      
+      // Handle proof file requirement
+      if (leaveType === 'Sick Leave') {
+        proofFileContainer.style.display = 'block';
+        proofFileInput.required = true;
+        proofRequirement.textContent = '*';
+        proofHint.textContent = 'Medical certificate, doctor\'s letter, or other proof of illness is required for sick leave.';
+      } else if (leaveType === 'Emergency Leave') {
+        proofFileContainer.style.display = 'block';
+        proofFileInput.required = false;
+        proofRequirement.textContent = '(Optional)';
+        proofHint.textContent = 'You can optionally upload supporting documents for your emergency leave request.';
+      } else {
+        proofFileContainer.style.display = 'none';
+        proofFileInput.required = false;
+        proofFileInput.value = '';
+        document.getElementById('file-info').classList.add('hidden');
+      }
+    });
+
+    // Handle file selection
+    function updateFileInfo() {
+      const files = proofFileInput.files;
+      const fileInfo = document.getElementById('file-info');
+      const fileName = document.getElementById('file-name');
+
+      if (files.length > 0) {
+        const file = files[0];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+
+        // Check file size
+        if (file.size > maxSize) {
+          alert('File size exceeds 5MB limit. Please select a smaller file.');
+          proofFileInput.value = '';
+          fileInfo.classList.add('hidden');
+          return;
+        }
+
+        fileName.textContent = file.name + ' (' + (file.size / 1024).toFixed(2) + ' KB)';
+        fileInfo.classList.remove('hidden');
+      } else {
+        fileInfo.classList.add('hidden');
+      }
+    }
+
+    // Trigger change event on page load if form is pre-populated
+    leaveTypeSelect.dispatchEvent(new Event('change'));
+  </script>

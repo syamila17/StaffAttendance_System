@@ -92,6 +92,16 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label class="block text-sm font-medium mb-2">
+              <i class="fas fa-id-badge mr-2"></i>Staff ID
+            </label>
+            <div class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white font-semibold">
+              {{ $staffId ?? 'N/A' }}
+            </div>
+            <p class="text-xs text-gray-400 mt-2">This field cannot be changed</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2">
               <i class="fas fa-user mr-2"></i>Full Name
             </label>
             <input type="text" name="full_name" value="{{ $profile->full_name ?? '' }}" 
@@ -118,8 +128,20 @@
             <label class="block text-sm font-medium mb-2">
               <i class="fas fa-building mr-2"></i>Department
             </label>
-            <input type="text" name="department" value="{{ $profile->department ?? '' }}" 
-                   class="w-full px-4 py-2 rounded-lg bg-white/20 border border-white/30 text-white placeholder-gray-400 focus:outline-none focus:border-white/50">
+            <div class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white font-semibold">
+              {{ $department?->department_name ?? $profile->department ?? 'N/A' }}
+            </div>
+            <p class="text-xs text-gray-400 mt-2">Read-only (managed by HR)</p>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2">
+              <i class="fas fa-users mr-2"></i>Team
+            </label>
+            <div class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white font-semibold">
+              {{ $team?->team_name ?? 'N/A' }}
+            </div>
+            <p class="text-xs text-gray-400 mt-2">Read-only (managed by HR)</p>
           </div>
 
           <div class="md:col-span-2">

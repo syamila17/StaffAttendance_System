@@ -11,14 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('staff', function (Blueprint $table) {
-            $table->id('staff_id');
-            $table->string('staff_name');
-            $table->string('staff_email')->unique();
-            $table->string('staff_password');
-            $table->unsignedBigInteger('team_id')->nullable();
-            $table->timestamps();
-        });
+        // Only create the table if it doesn't already exist
+        if (!Schema::hasTable('staff')) {
+            Schema::create('staff', function (Blueprint $table) {
+                $table->id('staff_id');
+                $table->string('staff_name');
+                $table->string('staff_email')->unique();
+                $table->string('staff_password');
+                $table->unsignedBigInteger('team_id')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

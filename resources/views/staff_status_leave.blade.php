@@ -167,6 +167,7 @@
                 <th class="px-6 py-4 text-left">To Date</th>
                 <th class="px-6 py-4 text-center">Days</th>
                 <th class="px-6 py-4 text-left">Reason</th>
+                <th class="px-6 py-4 text-left">Proof</th>
                 <th class="px-6 py-4 text-left">Status</th>
                 <th class="px-6 py-4 text-left">Applied On</th>
               </tr>
@@ -185,6 +186,29 @@
                     <span title="{{ $leave->reason }}">{{ Str::limit($leave->reason, 30) }}</span>
                   @else
                     <span class="text-gray-500">-</span>
+                  @endif
+                </td>
+                <td class="px-6 py-4">
+                  @if($leave->isProofRequired())
+                    @if($leave->hasProofFile())
+                      <button onclick="openProofModal({{ $leave->leave_request_id }}, '{{ $leave->proof_file }}')" class="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm inline-flex items-center gap-2 hover:bg-green-500/30 transition">
+                        <i class="fas fa-eye"></i>View
+                      </button>
+                    @else
+                      <span class="px-3 py-1 bg-red-500/20 text-red-300 rounded-full text-sm flex items-center gap-2">
+                        <i class="fas fa-exclamation-circle"></i>Required
+                      </span>
+                    @endif
+                  @elseif($leave->isProofOptional())
+                    @if($leave->hasProofFile())
+                      <button onclick="openProofModal({{ $leave->leave_request_id }}, '{{ $leave->proof_file }}')" class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm inline-flex items-center gap-2 hover:bg-blue-500/30 transition">
+                        <i class="fas fa-file"></i>View
+                      </button>
+                    @else
+                      <span class="text-gray-500 text-sm">-</span>
+                    @endif
+                  @else
+                    <span class="text-gray-500 text-sm">-</span>
                   @endif
                 </td>
                 <td class="px-6 py-4">
@@ -245,6 +269,98 @@
       @endif
     </div>
   </main>
+
+  <!-- Proof File Viewer Modal -->
+  <div id="proofModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-red-950 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col border border-red-800">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-6 border-b border-red-800">
+        <div class="flex items-center gap-3">
+          <i class="fas fa-file text-green-400 text-2xl"></i>
+          <div>
+            <h2 class="text-xl font-bold text-white">Proof Document</h2>
+            <p class="text-sm text-gray-400" id="proofFileName"></p>
+          </div>
+        </div>
+        <button onclick="closeProofModal()" class="text-gray-400 hover:text-white text-2xl transition">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Modal Content -->
+      <div id="proofViewer" class="flex-1 overflow-auto bg-red-900/30 flex items-center justify-center">
+        <!-- Content will be loaded here -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-between p-6 border-t border-red-800">
+        <p class="text-sm text-gray-400">
+          <i class="fas fa-info-circle mr-2"></i>
+          <span id="previewInfo">Previewing document. Use download button to save.</span>
+        </p>
+        <div class="flex gap-3">
+          <button onclick="closeProofModal()" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white transition">
+            <i class="fas fa-times mr-2"></i>Close
+          </button>
+          <button id="downloadProofBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white transition flex items-center gap-2">
+            <i class="fas fa-download"></i>Download
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Proof file viewer modal
+    function openProofModal(leaveId, fileName) {
+      const modal = document.getElementById('proofModal');
+      const iframe = document.getElementById('proofViewer');
+      const downloadBtn = document.getElementById('downloadProofBtn');
+      const proofFileName = document.getElementById('proofFileName');
+      
+      const proofUrl = '{{ url("/staff/leave") }}/' + leaveId + '/download-proof';
+      
+      // Set the file name
+      proofFileName.textContent = fileName;
+      
+      // Try to display in iframe for preview
+      const ext = fileName.split('.').pop().toLowerCase();
+      if (ext === 'pdf') {
+        iframe.src = proofUrl;
+        iframe.style.display = 'block';
+      } else if (['jpg', 'jpeg', 'png'].includes(ext)) {
+        iframe.innerHTML = '<img src="' + proofUrl + '" style="max-width: 100%; max-height: 100%; object-fit: contain;">';
+        iframe.style.display = 'block';
+      } else {
+        iframe.innerHTML = '<div class="flex flex-col items-center justify-center h-full text-gray-400"><i class="fas fa-file text-5xl mb-4"></i><p>Preview not available for this file type.</p><p class="text-sm mt-2">Please download to view.</p></div>';
+        iframe.style.display = 'block';
+      }
+      
+      // Set download button
+      downloadBtn.onclick = function() {
+        window.location.href = proofUrl;
+      };
+      
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeProofModal() {
+      const modal = document.getElementById('proofModal');
+      const iframe = document.getElementById('proofViewer');
+      iframe.src = '';
+      iframe.innerHTML = '';
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('proofModal')?.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeProofModal();
+      }
+    });
+  </script>
 
 </body>
 </html>

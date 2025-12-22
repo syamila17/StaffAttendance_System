@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('leave_requests', function (Blueprint $table) {
-            $table->boolean('status_viewed')->default(false)->after('rejected_at');
-            $table->timestamp('status_viewed_at')->nullable()->after('status_viewed');
+            if (!Schema::hasColumn('leave_requests', 'status_viewed')) {
+                $table->boolean('status_viewed')->default(false)->after('rejected_at');
+            }
+            if (!Schema::hasColumn('leave_requests', 'status_viewed_at')) {
+                $table->timestamp('status_viewed_at')->nullable()->after('status_viewed');
+            }
         });
     }
 

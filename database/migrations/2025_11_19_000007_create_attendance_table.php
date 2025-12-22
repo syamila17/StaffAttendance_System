@@ -11,19 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attendance', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('staff_id');
-            $table->date('attendance_date');
-            $table->time('check_in_time')->nullable();
-            $table->time('check_out_time')->nullable();
-            $table->enum('status', ['present', 'absent', 'late', 'leave'])->default('absent');
-            $table->text('remarks')->nullable();
-            $table->timestamps();
-            
-            $table->foreign('staff_id')->references('staff_id')->on('staff')->onDelete('cascade');
-            $table->unique(['staff_id', 'attendance_date']);
-        });
+        if (!Schema::hasTable('attendance')) {
+            Schema::create('attendance', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('staff_id');
+                $table->date('attendance_date');
+                $table->time('check_in_time')->nullable();
+                $table->time('check_out_time')->nullable();
+                $table->enum('status', ['present', 'absent', 'late', 'leave'])->default('absent');
+                $table->text('remarks')->nullable();
+                $table->timestamps();
+                
+                $table->foreign('staff_id')->references('staff_id')->on('staff')->onDelete('cascade');
+                $table->unique(['staff_id', 'attendance_date']);
+            });
+        }
     }
 
     /**

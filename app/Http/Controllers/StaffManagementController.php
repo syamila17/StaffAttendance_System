@@ -12,16 +12,41 @@ use Illuminate\Support\Facades\Session;
 class StaffManagementController extends Controller
 {
     // Display all staff members
-    public function index()
+    public function index(Request $request)
     {
+        // Handle language switching
+        if ($request->has('lang')) {
+            $lang = $request->query('lang');
+            if (in_array($lang, ['en', 'ms'])) {
+                app()->setLocale($lang);
+                session(['locale' => $lang]);
+            }
+        } else if (session()->has('locale')) {
+            app()->setLocale(session('locale'));
+        }
+
         if (!Session::has('admin_id')) {
             return redirect()->route('admin.login');
         }
 
-        $staff = Staff::with('department', 'team')->paginate(10);
+        $query = Staff::with('department', 'team');
+        
+        // Handle search
+        $search = request('search');
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw("LOWER(staff_name) LIKE ?", ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw("LOWER(staff_email) LIKE ?", ['%' . strtolower($search) . '%']);
+            });
+        }
+        
+        // Sort by staff name alphabetically
+        $query->orderBy('staff_name', 'asc');
+        
+        $staff = $query->paginate(10);
         
         return view('admin.staff_management', [
-            'staff' => $staff
+            'staff' => $staff,
         ]);
     }
 
@@ -56,7 +81,10 @@ class StaffManagementController extends Controller
             'team_id' => 'nullable|exists:teams,team_id'
         ]);
 
+        $staffId = Staff::generateStaffId();
+        
         Staff::create([
+            'staff_id' => $staffId,
             'staff_name' => $request->staff_name,
             'staff_email' => $request->staff_email,
             'staff_password' => Hash::make($request->staff_password),

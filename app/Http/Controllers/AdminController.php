@@ -12,8 +12,19 @@ use Carbon\Carbon;
 
 class AdminController extends Controller
 {
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
+        // Handle language switching
+        if ($request->has('lang')) {
+            $lang = $request->query('lang');
+            if (in_array($lang, ['en', 'ms'])) {
+                app()->setLocale($lang);
+                session(['locale' => $lang]);
+            }
+        } else if (session()->has('locale')) {
+            app()->setLocale(session('locale'));
+        }
+
         return view('admin_login');
     }
 
@@ -34,16 +45,36 @@ class AdminController extends Controller
             return back()->withInput()->withErrors(['password' => 'Incorrect password.']);
         }
 
+        // Ensure session is started
+        if (!session()->isStarted()) {
+            session()->start();
+        }
+        
+        // Store session data
         Session::put('admin_id', $admin->admin_id);
         Session::put('admin_name', $admin->admin_name);
         Session::put('admin_email', $admin->admin_email);
-        session()->regenerate();
+        Session::put('login_time', now()->timestamp);
+        
+        // Save session to storage
+        session()->save();
 
         return redirect()->route('admin.dashboard')->with('success', 'Welcome Admin!');
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
+        // Handle language switching
+        if ($request->has('lang')) {
+            $lang = $request->query('lang');
+            if (in_array($lang, ['en', 'ms'])) {
+                app()->setLocale($lang);
+                session(['locale' => $lang]);
+            }
+        } else if (session()->has('locale')) {
+            app()->setLocale(session('locale'));
+        }
+
         $adminId = Session::get('admin_id');
         
         // Store the timestamp of when admin viewed the dashboard
@@ -51,10 +82,32 @@ class AdminController extends Controller
             Session::put('leave_notifications_viewed_at_' . $adminId, Carbon::now());
         }
         
+        // Get statistics from database
+        $totalStaff = \App\Models\Staff::count();
+        
+        // Get present today (only 'present' or 'late' status, excluding 'leave')
+        $today = Carbon::today();
+        $presentToday = \App\Models\Attendance::whereDate('attendance_date', $today)
+            ->whereIn('status', ['present', 'late'])
+            ->distinct('staff_id')
+            ->count('staff_id');
+        
+        // Get on leave today (approved leave requests for today)
+        $onLeaveToday = \App\Models\LeaveRequest::where('status', 'approved')
+            ->where(function ($query) use ($today) {
+                $query->whereDate('from_date', '<=', $today)
+                      ->whereDate('to_date', '>=', $today);
+            })
+            ->distinct('staff_id')
+            ->count('staff_id');
+        
         // ✅ No need to check here - middleware already verified admin_id exists
-        return view('admin_dashboard' , [
+        return view('admin_dashboard', [
             'admin_name' => Session::get('admin_name'),
-            'admin_email' => Session::get('admin_email')
+            'admin_email' => Session::get('admin_email'),
+            'totalStaff' => $totalStaff,
+            'presentToday' => $presentToday,
+            'onLeaveToday' => $onLeaveToday,
         ]);
     }
 
@@ -64,8 +117,19 @@ class AdminController extends Controller
         return view('admin.departments', compact('departments'));
     }
 
-    public function leaveRequests()
+    public function leaveRequests(Request $request)
     {
+        // Handle language switching
+        if ($request->has('lang')) {
+            $lang = $request->query('lang');
+            if (in_array($lang, ['en', 'ms'])) {
+                app()->setLocale($lang);
+                session(['locale' => $lang]);
+            }
+        } else if (session()->has('locale')) {
+            app()->setLocale(session('locale'));
+        }
+
         $adminId = Session::get('admin_id');
         $status = request('status', 'pending');
         $leaveRequests = LeaveRequest::where('status', $status)

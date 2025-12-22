@@ -20,7 +20,10 @@ class LeaveRequest extends Model
         'status',
         'admin_notes',
         'approved_at',
-        'rejected_at'
+        'rejected_at',
+        'proof_file',
+        'proof_file_path',
+        'proof_uploaded_at'
     ];
 
     protected $casts = [
@@ -28,6 +31,7 @@ class LeaveRequest extends Model
         'to_date' => 'date',
         'approved_at' => 'datetime',
         'rejected_at' => 'datetime',
+        'proof_uploaded_at' => 'datetime',
     ];
 
     /**
@@ -60,5 +64,40 @@ class LeaveRequest extends Model
     public function scopeRejected($query)
     {
         return $query->where('status', 'rejected');
+    }
+
+    /**
+     * Check if proof file is required for this leave type
+     */
+    public function isProofRequired(): bool
+    {
+        return in_array($this->leave_type, ['Sick Leave']);
+    }
+
+    /**
+     * Check if proof file is optional for this leave type
+     */
+    public function isProofOptional(): bool
+    {
+        return in_array($this->leave_type, ['Emergency Leave']);
+    }
+
+    /**
+     * Get the full URL to the proof file
+     */
+    public function getProofFileUrl(): ?string
+    {
+        if ($this->proof_file_path) {
+            return asset('storage/' . $this->proof_file_path);
+        }
+        return null;
+    }
+
+    /**
+     * Check if proof file exists
+     */
+    public function hasProofFile(): bool
+    {
+        return !is_null($this->proof_file) && !is_null($this->proof_file_path);
     }
 }

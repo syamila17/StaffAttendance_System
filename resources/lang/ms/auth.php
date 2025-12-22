@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'staff_portal' => 'Portal Staff',
+    'admin_portal' => 'Portal Admin',
+    'attendance_system' => 'SISTEM KEHADIRAN STAFF',
+    'staff_records' => 'REKOD KEHADIRAN STAFF',
+    'admin_management' => 'Pengurusan Staff',
+    'staff_id' => 'ID Staff',
+    'email' => 'Email',
+    'password' => 'Kata Laluan',
+    'staff_id_placeholder' => 'Masukkan ID Staff',
+    'email_placeholder' => 'Masukkan email anda',
+    'password_placeholder' => 'Masukkan kata laluan anda',
+    'login' => 'Log Masuk',
+    'remember_me' => 'Ingat Saya',
+    'forgot_password' => 'Lupa Kata Laluan?',
+    'success_logout' => 'Anda telah log keluar dengan berjaya.',
+    'success_login' => 'Log masuk berjaya! Selamat kembali.',
+    'invalid_credentials' => 'ID Staff atau kata laluan tidak sah.',
+    'back_to_login' => 'Kembali ke Log Masuk',
+    'dont_have_account' => 'Belum ada akaun?',
+    'signup' => 'Daftar',
+    'staff_id' => 'ID Staff',
+    'staff_id_placeholder' => 'Masukkan ID Staff',
+    'login_credential_placeholder' => 'Masukkan Staff Id atau Email',
+];

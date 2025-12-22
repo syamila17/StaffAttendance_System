@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\LeaveRequest;
+use App\Models\Staff;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
 
@@ -13,6 +15,14 @@ class MetricsController extends Controller
      */
     public function index()
     {
+        try {
+            // Test database connection
+            \Illuminate\Support\Facades\DB::connection()->getPdo();
+        } catch (\Exception $e) {
+            // Return empty metrics if database is unavailable
+            return response("# Database connection unavailable\n", 503, ['Content-Type' => 'text/plain']);
+        }
+        
         $today = Carbon::today();
         
         // Get attendance statistics for today
@@ -67,6 +77,46 @@ class MetricsController extends Controller
             ];
         }
 
+        // Get leave statistics
+        $currentYear = date('Y');
+        $currentYearStart = Carbon::create($currentYear, 1, 1);
+        $currentYearEnd = Carbon::create($currentYear, 12, 31);
+
+        $allStaff = Staff::all();
+        $totalLeaveBalance = 0;
+        $totalLeaveUsed = 0;
+        $totalLeaveRemaining = 0;
+        
+        foreach ($allStaff as $staff) {
+            $totalAnnualLeave = 20;
+            $usedLeave = 0;
+            
+            $leaveRequests = LeaveRequest::where('staff_id', $staff->staff_id)
+                ->where('status', 'approved')
+                ->get();
+            
+            foreach ($leaveRequests as $leave) {
+                if ($leave->leave_type === 'Annual Leave' && 
+                    $leave->from_date <= $currentYearEnd && 
+                    $leave->to_date >= $currentYearStart) {
+                    $start = max($leave->from_date, $currentYearStart);
+                    $end = min($leave->to_date, $currentYearEnd);
+                    $daysUsed = $start->diffInDays($end) + 1;
+                    $usedLeave += $daysUsed;
+                }
+            }
+            
+            $remainingBalance = $totalAnnualLeave - $usedLeave;
+            $totalLeaveBalance += $totalAnnualLeave;
+            $totalLeaveUsed += $usedLeave;
+            $totalLeaveRemaining += $remainingBalance;
+        }
+
+        // Pending leave requests
+        $pendingLeaves = LeaveRequest::where('status', 'pending')->count();
+        $approvedLeaves = LeaveRequest::where('status', 'approved')->count();
+        $rejectedLeaves = LeaveRequest::where('status', 'rejected')->count();
+
         // Build Prometheus metrics format
         $metrics = "# HELP attendance_present_today Total staff present today\n";
         $metrics .= "# TYPE attendance_present_today gauge\n";
@@ -105,6 +155,31 @@ class MetricsController extends Controller
         $metrics .= "attendance_by_status {job=\"laravel-app\",status=\"el\"} $elToday\n";
         $metrics .= "attendance_by_status {job=\"laravel-app\",status=\"on_leave\"} $leaveToday\n";
         $metrics .= "attendance_by_status {job=\"laravel-app\",status=\"half_day\"} $halfDayToday\n\n";
+
+        // Leave balance metrics
+        $metrics .= "# HELP leave_total_balance Total annual leave balance for all staff\n";
+        $metrics .= "# TYPE leave_total_balance gauge\n";
+        $metrics .= "leave_total_balance {job=\"laravel-app\"} $totalLeaveBalance\n\n";
+
+        $metrics .= "# HELP leave_used Total annual leave used\n";
+        $metrics .= "# TYPE leave_used gauge\n";
+        $metrics .= "leave_used {job=\"laravel-app\"} $totalLeaveUsed\n\n";
+
+        $metrics .= "# HELP leave_remaining Total annual leave remaining\n";
+        $metrics .= "# TYPE leave_remaining gauge\n";
+        $metrics .= "leave_remaining {job=\"laravel-app\"} $totalLeaveRemaining\n\n";
+
+        $metrics .= "# HELP leave_requests_pending Pending leave requests\n";
+        $metrics .= "# TYPE leave_requests_pending gauge\n";
+        $metrics .= "leave_requests_pending {job=\"laravel-app\"} $pendingLeaves\n\n";
+
+        $metrics .= "# HELP leave_requests_approved Approved leave requests\n";
+        $metrics .= "# TYPE leave_requests_approved gauge\n";
+        $metrics .= "leave_requests_approved {job=\"laravel-app\"} $approvedLeaves\n\n";
+
+        $metrics .= "# HELP leave_requests_rejected Rejected leave requests\n";
+        $metrics .= "# TYPE leave_requests_rejected gauge\n";
+        $metrics .= "leave_requests_rejected {job=\"laravel-app\"} $rejectedLeaves\n\n";
 
         // Daily metrics for last 7 days
         $metrics .= "# HELP attendance_daily_present Daily present count\n";

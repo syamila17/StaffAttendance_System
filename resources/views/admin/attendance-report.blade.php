@@ -154,7 +154,14 @@
                   <td class="px-4 py-4 whitespace-nowrap text-base">{{ $record->check_out_time ?? '-' }}</td>
                   <td class="px-4 py-4 whitespace-nowrap text-base">
                     @if($record->check_in_time && $record->check_out_time)
-                      {{ \Carbon\Carbon::createFromFormat('H:i:s', $record->check_in_time)->diffInHours(\Carbon\Carbon::createFromFormat('H:i:s', $record->check_out_time)) }} hrs
+                      @php
+                        $checkIn = \Carbon\Carbon::createFromFormat('H:i:s', $record->check_in_time);
+                        $checkOut = \Carbon\Carbon::createFromFormat('H:i:s', $record->check_out_time);
+                        $totalMinutes = abs($checkOut->diffInMinutes($checkIn));
+                        $hours = floor($totalMinutes / 60);
+                        $minutes = $totalMinutes % 60;
+                      @endphp
+                      {{ $hours }}h {{ $minutes }}m
                     @else
                       -
                     @endif

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() ?? 'en' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistem Kehadiran</title>
+    <title>{{ __('auth.login') }} - {{ __('auth.attendance_system') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -33,14 +33,38 @@
             <!-- Logo/Header -->
             <div class="text-center mb-8">
                 <img src="{{ asset('images/UTMLOGO.png') }}" alt="UTM Logo" class="w-38 h-28 mx-auto mb-4 drop-shadow-xl"> 
-                <h1 class="text-2xl text-white drop-shadow-md ">REKOD KEHADIRAN STAFF</h1>
-                <p class=" text-sl mt-2">STAFF PORTAL</p>
+                <h1 class="text-2xl text-white drop-shadow-md">{{ __('auth.attendance_system') }}</h1>
+                <!-- <p class="text-sl mt-2">{{ __('auth.staff_portal') }}</p> -->
+                
+                <!-- STAFF PORTAL Badge -->
+                <div class="mt-3 inline-block">
+                    <span class="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                        <i class="fas fa-lock mr-1"></i> STAFF PORTAL
+                    </span>
+                </div>
+            </div>
+
+            <!-- Language Switcher -->
+            <div class="flex gap-2 mb-6 justify-center">
+                <a href="{{ url('/login?lang=en') }}" class="px-3 py-1 rounded text-sm font-semibold {{ app()->getLocale() == 'en' ? 'bg-white text-red-700' : 'bg-white/20 text-white hover:bg-white/30' }} transition">
+                    ENG
+                </a>
+                <a href="{{ url('/login?lang=ms') }}" class="px-3 py-1 rounded text-sm font-semibold {{ app()->getLocale() == 'ms' ? 'bg-white text-red-700' : 'bg-white/20 text-white hover:bg-white/30' }} transition">
+                    BM
+                </a>
             </div>
 
             @if(session('success'))
                 <p id="logout-message"
                     class="bg-white border border-green-500 text-green-700 px-4 py-2 rounded-lg mt-4 text-center font-semibold shadow-md">
                     {{ session('success') }}
+                </p>
+            @endif
+
+            @if(session('error'))
+                <p id="error-message"
+                    class="bg-white border border-red-500 text-red-700 px-4 py-2 rounded-lg mt-4 text-center font-semibold shadow-md">
+                    {{ session('error') }}
                 </p>
             @endif
 
@@ -59,30 +83,31 @@
             <!-- Laravel Real Login Form -->
             <form method="POST" action="{{ url('/login') }}" class="space-y-6">
                 @csrf
-                <!-- Email -->
+                <!-- Staff ID or Email -->
                 <div>
                     <label class="block text-sm font-bold mb-2">
-                        <i class="fas fa-envelope mr-1"></i> EMAIL
+                        <i class="fas fa-user mr-1"></i> {{ __('auth.staff_id_or_email') ?? 'Staff ID or Email' }}
                     </label>
                     <input 
-                        type="email" 
-                        name="email"
-                        value="{{ old('email') }}"
+                        type="text" 
+                        name="login_credential"
+                        value="{{ old('login_credential') }}"
                         required 
                         class="w-full px-4 py-2 bg-white/40 text-black font-semibold placeholder-gray-700 border border-white/50 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-md transition"
-                        placeholder="Masukkan Email"
+                        placeholder="Enter Staff Id or Email"
                     >
 
-
-                    @error('email')
-                        <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
+                    @error('login_credential')
+                        <p class="text-red-200 text-sm mt-2 font-semibold bg-red-900/40 p-2 rounded">
+                            <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                        </p>
                     @enderror
                 </div>
 
                 <!-- Password -->
                 <div>
                     <label class="block text-sm font-bold mb-2">
-                        <i class="fas fa-lock mr-1"></i> KATA LALUAN
+                        <i class="fas fa-lock mr-1"></i> {{ __('auth.password') }}
                     </label>
                     <div class="relative">
                         <input 
@@ -91,7 +116,7 @@
                             name="password"
                             required 
                             class="w-full px-4 py-2 bg-white/40 text-black font-semibold placeholder-gray-700 border border-white/50 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-md transition"
-                            placeholder="Masukkan Kata Laluan"
+                            placeholder="{{ __('auth.password_placeholder') }}"
                         >
                         <button 
                             type="button" 
@@ -102,7 +127,9 @@
                         </button>
                     </div>
                     @error('password')
-                        <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
+                        <p class="text-red-200 text-sm mt-2 font-semibold bg-red-900/40 p-2 rounded">
+                            <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                        </p>
                     @enderror
                 </div>
 
@@ -110,7 +137,7 @@
                 <div class="flex items-center justify-between">
                     <label class="flex items-center text-sm ">
                         <input type="checkbox" name="remember" class="w-4 h-4 text-red-500 border-white/40 bg-white/10 rounded focus:ring-red-400">
-                        <span class="ml-2">Ingat saya</span>
+                        <span class="ml-2">{{ __('auth.remember_me') }}</span>
                     </label>
                 </div>
 
@@ -119,18 +146,18 @@
                     type="submit"
                     class="w-full bg-red-700/80 hover:bg-red-800/90 text-white py-3 rounded-lg font-bold shadow-lg hover:shadow-2xl transition duration-200 backdrop-blur-md "
                 >
-                    <i class="fas fa-sign-in-alt mr-2"></i> Log Masuk
+                    <i class="fas fa-sign-in-alt mr-2"></i> {{ __('auth.login') }}
                 </button>
-
-                <!-- Error & Success messages -->
-                @if(session('error'))
-                    <p class="text-red-300 text-sm text-center mt-4">{{ session('error') }}</p>
-                @endif
             </form>
         </div>
 
         <div class="text-center mt-6 text-gray-200 text-sm font-medium drop-shadow outlined-text">
             <p>&copy; 2025 Sistem Pengurusan Kehadiran. Hak Cipta Terpelihara.</p>
+            <p class="mt-3">
+                <a href="{{ route('admin.login') }}" class="text-yellow-300 hover:text-yellow-200 font-semibold transition">
+                    <i class="fas fa-user-tie mr-1"></i>Admin Login
+                </a>
+            </p>
         </div>
     </div>
 

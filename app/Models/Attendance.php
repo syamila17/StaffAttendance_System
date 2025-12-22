@@ -17,6 +17,10 @@ class Attendance extends Model
         'check_out_time',
         'status',
         'remarks',
+        'el_reason',
+        'el_proof_file',
+        'el_proof_file_path',
+        'el_proof_uploaded_at',
     ];
 
     protected $casts = [

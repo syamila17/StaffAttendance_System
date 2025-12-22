@@ -58,17 +58,23 @@
 
       <!-- Today's Attendance Card -->
       <div class="bg-white/10 p-8 rounded-xl shadow-lg border border-white/20 mb-8">
-        <h2 class="text-2xl font-semibold mb-6">Today's Attendance</h2>
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-semibold">Today's Attendance</h2>
+          <div class="text-right">
+            <p class="text-xs text-gray-400">Current Time</p>
+            <p id="currentTime" class="text-2xl font-bold text-red-400">--:--:--</p>
+          </div>
+        </div>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <!-- Check-in Status -->
           <div class="bg-white/5 p-4 rounded-lg border border-white/10">
             <p class="text-gray-300 text-sm mb-2">Check-in Time</p>
             @if($todayAttendance && $todayAttendance->check_in_time)
-              <p class="text-2xl font-bold text-green-400">{{ substr($todayAttendance->check_in_time, 0, 5) }}</p>
-              <p class="text-xs text-gray-400 mt-1">Checked in</p>
+              <p class="text-2xl font-bold text-green-400">{{ substr($todayAttendance->check_in_time, 0, 8) }}</p>
+              <p class="text-xs text-gray-400 mt-1">✓ Checked in</p>
             @else
-              <p class="text-2xl font-bold text-gray-400">--:--</p>
+              <p class="text-2xl font-bold text-gray-400">--:--:--</p>
               <p class="text-xs text-gray-400 mt-1">Not checked in</p>
             @endif
           </div>
@@ -77,10 +83,10 @@
           <div class="bg-white/5 p-4 rounded-lg border border-white/10">
             <p class="text-gray-300 text-sm mb-2">Check-out Time</p>
             @if($todayAttendance && $todayAttendance->check_out_time)
-              <p class="text-2xl font-bold text-blue-400">{{ substr($todayAttendance->check_out_time, 0, 5) }}</p>
-              <p class="text-xs text-gray-400 mt-1">Checked out</p>
+              <p class="text-2xl font-bold text-blue-400">{{ substr($todayAttendance->check_out_time, 0, 8) }}</p>
+              <p class="text-xs text-gray-400 mt-1">✓ Checked out</p>
             @else
-              <p class="text-2xl font-bold text-gray-400">--:--</p>
+              <p class="text-2xl font-bold text-gray-400">--:--:--</p>
               <p class="text-xs text-gray-400 mt-1">Not checked out</p>
             @endif
           </div>
@@ -99,24 +105,49 @@
           </div>
         </div>
 
+            <!-- Duration Card (if both check-in and check-out exist) -->
+        @if($todayAttendance && $todayAttendance->check_in_time && $todayAttendance->check_out_time)
+          <div class="bg-blue-500/20 border border-blue-400/50 p-4 rounded-lg mb-8">
+            <p class="text-gray-300 text-sm mb-2">Working Duration</p>
+            <p class="text-xl font-semibold text-blue-300">
+              <i class="fas fa-hourglass-half mr-2"></i>
+              @php
+                $checkIn = \Carbon\Carbon::createFromFormat('H:i:s', $todayAttendance->check_in_time);
+                $checkOut = \Carbon\Carbon::createFromFormat('H:i:s', $todayAttendance->check_out_time);
+                $minutes = abs($checkOut->diffInMinutes($checkIn));
+                $hours = floor($minutes / 60);
+                $remainingMinutes = $minutes % 60;
+                $seconds = abs($checkOut->diffInSeconds($checkIn)) % 60;
+                echo $hours . 'h ' . $remainingMinutes . 'm';
+              @endphp
+            </p>
+          </div>
+        @endif
+
         <!-- Check-in/Check-out Buttons -->
         <div class="flex gap-4 mb-8">
-          @if(!$todayAttendance || !$todayAttendance->check_in_time)
-            <form method="POST" action="{{ route('attendance.checkIn') }}" class="flex-1">
-              @csrf
-              <button type="submit" class="w-full bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-semibold transition">
-                <i class="fas fa-sign-in-alt mr-2"></i>Check In
-              </button>
-            </form>
-          @endif
+          @if($approvedLeaveToday)
+            <div class="w-full bg-yellow-500/20 border border-yellow-500 text-yellow-300 px-6 py-3 rounded-lg font-semibold text-center">
+              <i class="fas fa-calendar-times mr-2"></i>You are on approved leave today. Check-in/Check-out disabled.
+            </div>
+          @else
+            @if(!$todayAttendance || !$todayAttendance->check_in_time)
+              <form method="POST" action="{{ route('attendance.checkIn') }}" class="flex-1">
+                @csrf
+                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-semibold transition">
+                  <i class="fas fa-sign-in-alt mr-2"></i>Check In
+                </button>
+              </form>
+            @endif
 
-          @if($todayAttendance && $todayAttendance->check_in_time && !$todayAttendance->check_out_time)
-            <form method="POST" action="{{ route('attendance.checkOut') }}" class="flex-1">
-              @csrf
-              <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition">
-                <i class="fas fa-sign-out-alt mr-2"></i>Check Out
-              </button>
-            </form>
+            @if($todayAttendance && $todayAttendance->check_in_time && !$todayAttendance->check_out_time)
+              <form method="POST" action="{{ route('attendance.checkOut') }}" class="flex-1">
+                @csrf
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition">
+                  <i class="fas fa-sign-out-alt mr-2"></i>Check Out
+                </button>
+              </form>
+            @endif
           @endif
         </div>
 
@@ -171,6 +202,21 @@
               </div>
             </div>
 
+            <!-- EL Reason (Mandatory for EL) -->
+            <div id="elReasonContainer" style="display: none;">
+              <label class="block text-sm font-medium text-gray-300 mb-2">Reason for Emergency Leave <span class="text-red-400">*</span></label>
+              <textarea name="el_reason" rows="3" placeholder="Provide reason for emergency leave..."
+                class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500 placeholder-gray-500"></textarea>
+            </div>
+
+            <!-- EL Proof (Optional for EL) -->
+            <div id="elProofContainer" style="display: none;">
+              <label class="block text-sm font-medium text-gray-300 mb-2">Supporting Document (Optional)</label>
+              <input type="file" name="el_proof_file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                class="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-red-500">
+              <p class="text-xs text-gray-400 mt-1">Allowed formats: PDF, JPG, PNG, DOC, DOCX (Max 5MB)</p>
+            </div>
+
             <!-- Remarks -->
             <div>
               <label class="block text-sm font-medium text-gray-300 mb-2">Remarks (Optional)</label>
@@ -194,18 +240,51 @@
   </main>
 
   <script>
+    // Live clock display
+    function updateClock() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit',
+        hour12: false 
+      });
+      document.getElementById('currentTime').textContent = timeString;
+    }
+
+    // Update clock every second
+    updateClock();
+    setInterval(updateClock, 1000);
+
     function toggleTimeInputs() {
       const status = document.getElementById('statusSelect').value;
       const timeInputsContainer = document.getElementById('timeInputsContainer');
       const checkInInput = document.querySelector('input[name="check_in_time"]');
       const checkOutInput = document.querySelector('input[name="check_out_time"]');
+      const elReasonContainer = document.getElementById('elReasonContainer');
+      const elProofContainer = document.getElementById('elProofContainer');
+      const elReasonField = document.querySelector('textarea[name="el_reason"]');
 
-      if (status === 'absent') {
+      // Show/hide time inputs
+      if (status === 'absent' || status === 'on leave' || status === 'el') {
         timeInputsContainer.style.display = 'none';
         checkInInput.value = '';
         checkOutInput.value = '';
       } else {
         timeInputsContainer.style.display = 'grid';
+      }
+
+      // Show/hide EL specific fields
+      if (status === 'el') {
+        elReasonContainer.style.display = 'block';
+        elProofContainer.style.display = 'block';
+        elReasonField.required = true;
+      } else {
+        elReasonContainer.style.display = 'none';
+        elProofContainer.style.display = 'none';
+        elReasonField.required = false;
+        elReasonField.value = '';
+        document.querySelector('input[name="el_proof_file"]').value = '';
       }
     }
 
@@ -220,12 +299,18 @@
       document.getElementById('statusSelect').value = '';
       // Clear remarks textarea
       document.querySelector('textarea[name="remarks"]').value = '';
+      // Clear EL specific fields
+      document.querySelector('textarea[name="el_reason"]').value = '';
+      document.querySelector('input[name="el_proof_file"]').value = '';
       // Show time inputs
       const timeInputsContainer = document.getElementById('timeInputsContainer');
       timeInputsContainer.style.display = 'grid';
       // Clear time inputs
       document.querySelector('input[name="check_in_time"]').value = '';
       document.querySelector('input[name="check_out_time"]').value = '';
+      // Hide EL fields
+      document.getElementById('elReasonContainer').style.display = 'none';
+      document.getElementById('elProofContainer').style.display = 'none';
     }
 
     // Initialize on page load

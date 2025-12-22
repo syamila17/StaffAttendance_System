@@ -10,8 +10,12 @@ class StaffProfile extends Model
     use HasFactory;
 
     protected $table = 'staff_profile';
+    
+    // ✅ SECURITY: Explicitly guard staff_id from mass assignment
+    // This prevents any attempt to modify staff_id through fillable or update operations
+    protected $guarded = ['staff_id'];
+    
     protected $fillable = [
-        'staff_id',
         'full_name',
         'email',
         'phone_number',

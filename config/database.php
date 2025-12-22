@@ -58,8 +58,14 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
+            'timeout' => env('DB_CONNECTION_TIMEOUT', 10),
+            'pool_size' => env('DB_POOL_SIZE', 5),
+            'pool_timeout' => env('DB_POOL_TIMEOUT', 30),
+            'pool_recycle' => env('DB_CONNECTION_TIMEOUT', 10),
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                PDO::ATTR_TIMEOUT => env('DB_CONNECTION_TIMEOUT', 10),
+                PDO::ATTR_PERSISTENT => false,
             ]) : [],
         ],
 

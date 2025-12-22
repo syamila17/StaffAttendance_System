@@ -11,24 +11,26 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('leave_requests', function (Blueprint $table) {
-            $table->id('leave_request_id');
-            $table->unsignedBigInteger('staff_id');
-            $table->string('leave_type'); // Annual Leave, Emergency Leave, Sick Leave, etc.
-            $table->date('from_date');
-            $table->date('to_date');
-            $table->text('reason')->nullable();
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-            $table->text('admin_notes')->nullable();
-            $table->timestamp('approved_at')->nullable();
-            $table->timestamp('rejected_at')->nullable();
-            $table->timestamps();
+        if (!Schema::hasTable('leave_requests')) {
+            Schema::create('leave_requests', function (Blueprint $table) {
+                $table->id('leave_request_id');
+                $table->unsignedBigInteger('staff_id');
+                $table->string('leave_type'); // Annual Leave, Emergency Leave, Sick Leave, etc.
+                $table->date('from_date');
+                $table->date('to_date');
+                $table->text('reason')->nullable();
+                $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+                $table->text('admin_notes')->nullable();
+                $table->timestamp('approved_at')->nullable();
+                $table->timestamp('rejected_at')->nullable();
+                $table->timestamps();
 
-            $table->foreign('staff_id')
-                ->references('staff_id')
-                ->on('staff')
-                ->onDelete('cascade');
-        });
+                $table->foreign('staff_id')
+                    ->references('staff_id')
+                    ->on('staff')
+                    ->onDelete('cascade');
+            });
+        }
     }
 
     /**

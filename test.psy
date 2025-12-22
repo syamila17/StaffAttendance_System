@@ -1,0 +1,2 @@
+DB::connection()->getPdo();
+echo "✓ Database connection successful!\n";
