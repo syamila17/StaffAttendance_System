@@ -53,29 +53,29 @@
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto p-8">
       <div class="max-w-6xl">
-        <h1 class="text-4xl font-bold mb-2">Attendance Reports</h1>
-        <p class="text-gray-400 mb-8">View attendance statistics and trends</p>
+        <h1 class="text-4xl font-bold mb-2">{{ trans('admin.attendance_reports') }}</h1>
+        <p class="text-gray-400 mb-8">{{ trans('admin.view_attendance_statistics') }}</p>
 
         <!-- Filters & Export -->
         <div class="flex justify-between items-start mb-8 gap-4">
           <div class="flex-1">
             <div class="bg-gray-800 rounded-lg border border-gray-700 p-6">
-              <h2 class="text-lg font-semibold mb-4">Filters</h2>
+              <h2 class="text-lg font-semibold mb-4">{{ trans('admin.filters') }}</h2>
               <form method="GET" action="{{ route('admin.attendance.report') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label class="block text-sm mb-2 text-white">Start Date</label>
+              <label class="block text-sm mb-2 text-white">{{ trans('admin.start_date') }}</label>
               <input type="date" name="start_date" value="{{ $startDate }}" 
                 class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white">
             </div>
             <div>
-              <label class="block text-sm mb-2 text-white">End Date</label>
+              <label class="block text-sm mb-2 text-white">{{ trans('admin.end_date') }}</label>
               <input type="date" name="end_date" value="{{ $endDate }}" 
                 class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white">
             </div>
             <div>
-              <label class="block text-sm mb-2 text-white">Staff Member</label>
+              <label class="block text-sm mb-2 text-white">{{ trans('admin.staff_member') }}</label>
               <select name="staff_id" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white">
-                <option value="">All Staff</option>
+                <option value="">{{ trans('admin.all_staff') }}</option>
                 @foreach($staff as $person)
                   <option value="{{ $person->staff_id }}" style="color: black;">{{ $person->staff_name }}</option>
                 @endforeach
@@ -83,7 +83,7 @@
             </div>
             <div class="flex items-end">
               <button type="submit" class="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded transition text-white">
-                <i class="fas fa-search mr-2"></i>Filter
+                <i class="fas fa-search mr-2"></i>{{ trans('admin.filter') }}
               </button>
             </div>
           </form>
@@ -91,10 +91,10 @@
           </div>
           <div class="flex flex-col gap-2 h-fit">
             <button onclick="generatePDF()" class="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-lg transition text-white font-semibold shadow-lg text-sm" title="Export as PDF">
-              <i class="fas fa-file-pdf mr-2"></i>Export PDF
+              <i class="fas fa-file-pdf mr-2"></i>{{ trans('admin.export_pdf') }}
             </button>
             <button onclick="printReport()" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg transition text-white font-semibold shadow-lg text-sm" title="Print Report">
-              <i class="fas fa-print mr-2"></i>Print
+              <i class="fas fa-print mr-2"></i>{{ trans('admin.print_report') }}
             </button>
           </div>
         </div>

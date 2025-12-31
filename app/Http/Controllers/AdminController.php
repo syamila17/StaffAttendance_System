@@ -85,10 +85,10 @@ class AdminController extends Controller
         // Get statistics from database
         $totalStaff = \App\Models\Staff::count();
         
-        // Get present today (only 'present' or 'late' status, excluding 'leave')
+        // Get present today (only 'present', 'late', or 'half day' status, excluding 'leave')
         $today = Carbon::today();
         $presentToday = \App\Models\Attendance::whereDate('attendance_date', $today)
-            ->whereIn('status', ['present', 'late'])
+            ->whereIn('status', ['present', 'late', 'half day'])
             ->distinct('staff_id')
             ->count('staff_id');
         

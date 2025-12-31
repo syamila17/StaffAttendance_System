@@ -166,10 +166,7 @@
                 <th class="px-6 py-4 text-left">From Date</th>
                 <th class="px-6 py-4 text-left">To Date</th>
                 <th class="px-6 py-4 text-center">Days</th>
-                <th class="px-6 py-4 text-left">Reason</th>
-                <th class="px-6 py-4 text-left">Proof</th>
                 <th class="px-6 py-4 text-left">Status</th>
-                <th class="px-6 py-4 text-left">Applied On</th>
               </tr>
             </thead>
             <tbody>
@@ -181,36 +178,6 @@
                 <td class="px-6 py-4">{{ $leave->from_date->format('M d, Y') }}</td>
                 <td class="px-6 py-4">{{ $leave->to_date->format('M d, Y') }}</td>
                 <td class="px-6 py-4 text-center font-semibold">{{ $leave->from_date->diffInDays($leave->to_date) + 1 }} days</td>
-                <td class="px-6 py-4 text-gray-300">
-                  @if($leave->reason)
-                    <span title="{{ $leave->reason }}">{{ Str::limit($leave->reason, 30) }}</span>
-                  @else
-                    <span class="text-gray-500">-</span>
-                  @endif
-                </td>
-                <td class="px-6 py-4">
-                  @if($leave->isProofRequired())
-                    @if($leave->hasProofFile())
-                      <button onclick="openProofModal({{ $leave->leave_request_id }}, '{{ $leave->proof_file }}')" class="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm inline-flex items-center gap-2 hover:bg-green-500/30 transition">
-                        <i class="fas fa-eye"></i>View
-                      </button>
-                    @else
-                      <span class="px-3 py-1 bg-red-500/20 text-red-300 rounded-full text-sm flex items-center gap-2">
-                        <i class="fas fa-exclamation-circle"></i>Required
-                      </span>
-                    @endif
-                  @elseif($leave->isProofOptional())
-                    @if($leave->hasProofFile())
-                      <button onclick="openProofModal({{ $leave->leave_request_id }}, '{{ $leave->proof_file }}')" class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm inline-flex items-center gap-2 hover:bg-blue-500/30 transition">
-                        <i class="fas fa-file"></i>View
-                      </button>
-                    @else
-                      <span class="text-gray-500 text-sm">-</span>
-                    @endif
-                  @else
-                    <span class="text-gray-500 text-sm">-</span>
-                  @endif
-                </td>
                 <td class="px-6 py-4">
                   @if($leave->status === 'pending')
                     <span class="px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-full text-sm">
@@ -226,30 +193,7 @@
                     </span>
                   @endif
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-400">{{ $leave->created_at->format('M d, Y') }}</td>
               </tr>
-
-              @if($leave->status === 'rejected' && $leave->admin_notes)
-              <tr class="bg-red-500/10 border-b border-white/10">
-                <td colspan="7" class="px-6 py-4">
-                  <div class="flex items-start gap-3">
-                    <i class="fas fa-clipboard-list text-red-400 mt-1"></i>
-                    <div>
-                      <p class="text-red-300 font-semibold text-sm">Admin Notes:</p>
-                      <p class="text-gray-300 text-sm mt-1">{{ $leave->admin_notes }}</p>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              @endif
-
-              @if($leave->status === 'approved' && $leave->approved_at)
-              <tr class="bg-green-500/10 border-b border-white/10">
-                <td colspan="7" class="px-6 py-3 text-sm text-gray-400">
-                  <i class="fas fa-check mr-2 text-green-400"></i>Approved on {{ $leave->approved_at->format('M d, Y \a\t H:i') }}
-                </td>
-              </tr>
-              @endif
               @endforeach
             </tbody>
           </table>

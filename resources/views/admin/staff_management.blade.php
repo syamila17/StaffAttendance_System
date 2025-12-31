@@ -17,16 +17,6 @@
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto p-8">
       <div class="max-w-7xl">
-        <!-- Language Switcher -->
-        <div class="flex justify-end mb-6 gap-2">
-          <a href="{{ route('admin.staff.index', ['lang' => 'en', 'search' => request('search'), 'page' => request('page')]) }}" class="px-4 py-2 rounded-lg font-semibold transition @if(app()->getLocale() === 'en') bg-orange-600 @else bg-gray-700 hover:bg-gray-600 @endif">
-            EN
-          </a>
-          <a href="{{ route('admin.staff.index', ['lang' => 'ms', 'search' => request('search'), 'page' => request('page')]) }}" class="px-4 py-2 rounded-lg font-semibold transition @if(app()->getLocale() === 'ms') bg-orange-600 @else bg-gray-700 hover:bg-gray-600 @endif">
-            MS
-          </a>
-        </div>
-
         <div class="flex justify-between items-center mb-8">
           <div>
             <h1 class="text-4xl font-bold mb-2">{{ trans('admin.staff_management') }}</h1>

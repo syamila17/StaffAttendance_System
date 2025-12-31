@@ -17,6 +17,13 @@
 </head>
 
 <body class="min-h-screen flex items-center justify-center p-4">
+    <!-- Staff Login Link (Top Right) -->
+    <div class="absolute top-6 right-6 z-20">
+        <a href="{{ route('login') }}" class="bg-yellow-400/90 hover:bg-yellow-300 text-yellow-900 px-4 py-2 rounded-lg font-bold transition flex items-center gap-2 shadow-lg">
+            <i class="fas fa-user"></i>Staff Login
+        </a>
+    </div>
+
     <div class="w-full max-w-md">
         <div class="bg-white/25 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden border border-white/40">
             <div class="p-8">
@@ -35,10 +42,10 @@
 
                 <!-- Language Switcher -->
                 <div class="flex gap-2 mb-6 justify-center">
-                    <a href="{{ url('/admin_login?lang=en') }}" class="px-3 py-1 rounded text-sm font-semibold {{ app()->getLocale() == 'en' ? 'bg-white text-orange-700' : 'bg-white/30 text-white hover:bg-white/40' }} transition">
+                    <a href="{{ route('admin.login', ['lang' => 'en']) }}" class="px-3 py-1 rounded text-sm font-semibold {{ app()->getLocale() == 'en' ? 'bg-white text-orange-700' : 'bg-white/30 text-white hover:bg-white/40' }} transition">
                         ENG
                     </a>
-                    <a href="{{ url('/admin_login?lang=ms') }}" class="px-3 py-1 rounded text-sm font-semibold {{ app()->getLocale() == 'ms' ? 'bg-white text-orange-700' : 'bg-white/30 text-white hover:bg-white/40' }} transition">
+                    <a href="{{ route('admin.login', ['lang' => 'ms']) }}" class="px-3 py-1 rounded text-sm font-semibold {{ app()->getLocale() == 'ms' ? 'bg-white text-orange-700' : 'bg-white/30 text-white hover:bg-white/40' }} transition">
                         BM
                     </a>
                 </div>

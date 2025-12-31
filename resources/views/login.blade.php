@@ -26,6 +26,13 @@
     <!-- 🔴 Maroon transparent overlay -->
     <div class="absolute inset-0 bg-gradient-to-br from-red-800/70 to-red-950/70"></div>
 
+    <!-- Admin Login Link (Top Right) -->
+    <div class="absolute top-6 right-6 z-20">
+        <a href="{{ route('admin.login') }}" class="bg-yellow-400/90 hover:bg-yellow-300 text-yellow-900 px-4 py-2 rounded-lg font-bold transition flex items-center gap-2 shadow-lg">
+            <i class="fas fa-user-tie"></i>Admin Login
+        </a>
+    </div>
+
     <!-- 🫧 Glass bubble box -->
     <div class="relative z-10 w-full max-w-md">
         <div class="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl shadow-2xl overflow-hidden p-8 text-white font-semibold">
@@ -153,11 +160,6 @@
 
         <div class="text-center mt-6 text-gray-200 text-sm font-medium drop-shadow outlined-text">
             <p>&copy; 2025 Sistem Pengurusan Kehadiran. Hak Cipta Terpelihara.</p>
-            <p class="mt-3">
-                <a href="{{ route('admin.login') }}" class="text-yellow-300 hover:text-yellow-200 font-semibold transition">
-                    <i class="fas fa-user-tie mr-1"></i>Admin Login
-                </a>
-            </p>
         </div>
     </div>
 

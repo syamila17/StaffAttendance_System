@@ -35,6 +35,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\RegenerateToken::class,
+            \App\Http\Middleware\SetLocale::class,
             // ⚠️ DO NOT add StaffAuth here!
         ],
 
@@ -62,6 +63,7 @@ class Kernel extends HttpKernel
         // ✅ Register your custom middleware here
         'staff.auth' => \App\Http\Middleware\StaffAuth::class,
         'admin.auth' => \App\Http\Middleware\AdminAuth::class,
+        'set.locale' => \App\Http\Middleware\SetLocale::class,
     
     ];
 }

@@ -77,20 +77,28 @@ class AttendanceController extends Controller
         // Capture current time in HH:MM:SS format directly
         $currentTime = date('H:i:s');
         
+        // Determine status based on check-in time
+        // If check-in is after 12:00 PM (12:00:00), mark as half day
+        $checkInHour = (int)date('H');
+        $status = ($checkInHour >= 12) ? 'half day' : 'present';
+        
         $attendance = Attendance::firstOrCreate(
             [
                 'staff_id' => $staffId,
                 'attendance_date' => $today
             ],
             [
-                'status' => 'present',
+                'status' => $status,
                 'check_in_time' => $currentTime
             ]
         );
 
         // If check-in doesn't exist yet, update it with current time
         if ($attendance->check_in_time === null) {
-            $attendance->update(['check_in_time' => $currentTime]);
+            $attendance->update([
+                'check_in_time' => $currentTime,
+                'status' => $status
+            ]);
         }
 
         return back()->with('success', 'Check-in successful at ' . $currentTime);

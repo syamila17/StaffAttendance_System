@@ -151,6 +151,30 @@
           </div>
         @endif
       </div>
+
+      <!-- Quick Check-in/Check-out Buttons -->
+      @if($todayAttendance && $todayAttendance->status === 'present')
+        <div class="flex gap-4 mt-6">
+          @if(!$todayAttendance->check_in_time)
+            <form method="POST" action="{{ route('attendance.checkIn') }}" class="flex-1">
+              @csrf
+              <button type="submit" class="w-full bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-semibold transition flex items-center justify-center">
+                <i class="fas fa-sign-in-alt mr-2"></i>Check In
+              </button>
+            </form>
+          @endif
+
+          @if($todayAttendance->check_in_time && !$todayAttendance->check_out_time)
+            <form method="POST" action="{{ route('attendance.checkOut') }}" class="flex-1">
+              @csrf
+              <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition flex items-center justify-center">
+                <i class="fas fa-sign-out-alt mr-2"></i>Check Out
+              </button>
+            </form>
+          @endif
+        </div>
+      @endif
+    </div>
     </div>
 
     <!-- ========== REDESIGNED SECTION: Pie Chart + Stats Side by Side ========== -->
@@ -240,15 +264,15 @@
             </div>
           </div>
 
-          <!-- Total Late Box -->
-          <div class="bg-white/10 p-3 rounded-xl shadow-lg border border-white/20 hover:border-yellow-400/50 transition">
+          <!-- Total Half Day Box -->
+          <div class="bg-white/10 p-3 rounded-xl shadow-lg border border-white/20 hover:border-purple-400/50 transition">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-gray-300 text-xs mb-0.5">{{ __('dashboard.total_late') }}</p>
-                <p class="text-2xl font-bold text-yellow-400">{{ $totalLate }}</p>
-                <p class="text-xs text-yellow-300 mt-0.5">{{ $attendanceStats['late_percentage'] }}% {{ __('dashboard.of_month') }}</p>
+                <p class="text-gray-300 text-xs mb-0.5">{{ __('dashboard.total_half_day') }}</p>
+                <p class="text-2xl font-bold text-purple-400">{{ $totalHalfDay }}</p>
+                <p class="text-xs text-purple-300 mt-0.5">{{ $attendanceStats['half_day_percentage'] }}% {{ __('dashboard.of_month') }}</p>
               </div>
-              <i class="fas fa-clock text-yellow-400/20 text-3xl"></i>
+              <i class="fas fa-sun text-purple-400/20 text-3xl"></i>
             </div>
           </div>
 
@@ -257,8 +281,8 @@
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-gray-300 text-xs mb-0.5">{{ __('dashboard.total_on_leave') }}</p>
-                <p class="text-2xl font-bold text-blue-400">{{ $totalOnLeave }}</p>
-                <p class="text-xs text-blue-300 mt-0.5">{{ $attendanceStats['on_leave_percentage'] }}% {{ __('dashboard.of_month') }}</p>
+                <p class="text-2xl font-bold text-blue-400">{{ (int)$totalOnLeave }}</p>
+                <p class="text-xs text-blue-300 mt-0.5">{{ (int)$attendanceStats['on_leave_percentage'] }}% {{ __('dashboard.of_month') }}</p>
               </div>
               <i class="fas fa-calendar text-blue-400/20 text-3xl"></i>
             </div>

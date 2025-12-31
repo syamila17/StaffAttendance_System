@@ -29,7 +29,7 @@ return [
     'current' => 'Semasa',
     'total_present' => 'Jumlah Hadir',
     'total_absent' => 'Jumlah Absen',
-    'total_late' => 'Jumlah Lewat',
+    'total_half_day' => 'Jumlah Setengah Hari',
     'total_on_leave' => 'Jumlah Cuti',
     'of_month' => 'daripada bulan',
     'present_days' => 'Hari Hadir',

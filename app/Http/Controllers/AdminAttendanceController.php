@@ -13,8 +13,19 @@ class AdminAttendanceController extends Controller
     /**
      * Show attendance management page
      */
-    public function index()
+    public function index(Request $request)
     {
+        // Handle language switching
+        if ($request->has('lang')) {
+            $lang = $request->query('lang');
+            if (in_array($lang, ['en', 'ms'])) {
+                app()->setLocale($lang);
+                session(['locale' => $lang]);
+            }
+        } else if (session()->has('locale')) {
+            app()->setLocale(session('locale'));
+        }
+
         // ✅ No need to check - middleware already verified admin_id exists
         $staff = Staff::all();
         $selectedDate = request('date', Carbon::today()->format('Y-m-d'));
@@ -120,8 +131,19 @@ class AdminAttendanceController extends Controller
     /**
      * Get attendance report
      */
-    public function report()
+    public function report(Request $request)
     {
+        // Handle language switching
+        if ($request->has('lang')) {
+            $lang = $request->query('lang');
+            if (in_array($lang, ['en', 'ms'])) {
+                app()->setLocale($lang);
+                session(['locale' => $lang]);
+            }
+        } else if (session()->has('locale')) {
+            app()->setLocale(session('locale'));
+        }
+
         // ✅ No need to check - middleware already verified admin_id exists
         $startDate = request('start_date', Carbon::now()->startOfMonth()->format('Y-m-d'));
         $endDate = request('end_date', Carbon::today()->format('Y-m-d'));

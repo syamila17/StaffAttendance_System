@@ -101,7 +101,6 @@ class StaffController extends Controller
         'todayAttendance',
         'totalPresent',
         'totalAbsent',
-        'totalLate',
         'totalEL',
         'totalOnLeave',
         'totalHalfDay',
@@ -122,41 +121,9 @@ public function getPieChartData(Request $request)
                 $staffId = Session::get('staff_id');
                 $selectedMonth = $request->query('month', Carbon::now()->format('Y-m'));
         
-        // Parse month
-        $dateparts = explode('-', $selectedMonth);
-        $year = $dateparts[0];
-        $month = $dateparts[1];
-        
-        // Get attendance data for selected month
-        $attendanceData = Attendance::where('staff_id', $staffId)
-            ->whereYear('attendance_date', $year)
-            ->whereMonth('attendance_date', $month)
-            ->get();
-        
-        // Count all statuses from attendance records
-        $presentCount = $attendanceData->where('status', 'present')->count();
-        $absentCount = $attendanceData->where('status', 'absent')->count();
-        $lateCount = $attendanceData->where('status', 'late')->count();
-        $halfDayCount = $attendanceData->where('status', 'half day')->count();
-        
-        // Count on_leave from leave_requests table (approved leaves)
-        $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth();
-        $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth();
-        
-        $approvedLeaves = LeaveRequest::where('staff_id', $staffId)
-            ->where('status', 'approved')
-            ->where('from_date', '<=', $endDate)
-            ->where('to_date', '>=', $startDate)
-            ->get();
-
-        $onLeaveCount = 0;
-        foreach ($approvedLeaves as $leave) {
-            $leaveStart = $leave->from_date->greaterThan($startDate) ? $leave->from_date : $startDate;
-            $leaveEnd = $leave->to_date->lessThan($endDate) ? $leave->to_date : $endDate;
-            $daysInMonth = $leaveStart->diffInDays($leaveEnd) + 1;
-            $onLeaveCount += $daysInMonth;
-        }
-        
+                // Use the same stats function as dashboard
+                $stats = $this->getMonthlyAttendanceStats($staffId, $selectedMonth);
+                
         return response()->json([
             'success' => true,
             'data' => [
@@ -164,7 +131,13 @@ public function getPieChartData(Request $request)
                 'datasets' => [
                     [
                         'label' => 'Attendance Status',
-                        'data' => [$presentCount, $absentCount, $lateCount, $onLeaveCount, $halfDayCount],
+                        'data' => [
+                            (int)$stats['present'],
+                            (int)$stats['absent'],
+                            (int)$stats['late'],
+                            (int)$stats['on_leave'],
+                            (int)$stats['half_day']
+                        ],
                         'backgroundColor' => [
                             'rgba(34, 197, 94, 0.7)',    // Green - Present
                             'rgba(239, 68, 68, 0.7)',    // Red - Absent
@@ -319,29 +292,24 @@ public function getPieChartData(Request $request)
                 'status_viewed_at' => Carbon::now()
             ]);
 
-        // Get all leave requests
+        // Get all leave requests using string staff_id (data is actually STRING despite column type)
         $today = Carbon::today();
         $allLeaves = LeaveRequest::where('staff_id', $staffId)
             ->orderBy('created_at', 'desc')
             ->get();
-        
-        // Filter to only show active leaves (to_date >= today)
-        $activeLeaves = $allLeaves->filter(function ($leave) use ($today) {
-            return $leave->to_date >= $today;
-        });
 
-        // Count by status (only from active leaves)
-        $pendingCount = $activeLeaves->where('status', 'pending')->count();
-        $approvedCount = $activeLeaves->where('status', 'approved')->count();
-        $rejectedCount = $activeLeaves->where('status', 'rejected')->count();
-        $totalRequests = $activeLeaves->count();
+        // Count by status (count all leaves regardless of date) - use whereStrict for exact matching
+        $pendingCount = $allLeaves->whereStrict('status', 'pending')->count();
+        $approvedCount = $allLeaves->whereStrict('status', 'approved')->count();
+        $rejectedCount = $allLeaves->whereStrict('status', 'rejected')->count();
+        $totalRequests = $allLeaves->count();
 
-        // Filter based on request parameter
+        // Filter based on request parameter (show all leaves, not just future ones)
         $filter = request('filter', 'all');
         if ($filter === 'all') {
-            $filteredLeaves = $activeLeaves;
+            $filteredLeaves = $allLeaves;
         } else {
-            $filteredLeaves = $activeLeaves->where('status', $filter);
+            $filteredLeaves = $allLeaves->whereStrict('status', $filter);
         }
 
         // Calculate off days for current month
@@ -351,35 +319,58 @@ public function getPieChartData(Request $request)
         $currentMonthEnd = Carbon::now()->endOfMonth();
 
         $offDaysThisMonth = 0;
-        foreach ($activeLeaves->where('status', 'approved') as $leave) {
-            if ($leave->from_date <= $currentMonthEnd && $leave->to_date >= $currentMonthStart) {
-                $daysInMonth = 0;
-                // Use Carbon comparison instead of PHP max/min
-                $start = $leave->from_date->greaterThan($currentMonthStart) ? $leave->from_date : $currentMonthStart;
-                $end = $leave->to_date->lessThan($currentMonthEnd) ? $leave->to_date : $currentMonthEnd;
+        foreach ($allLeaves->whereStrict('status', 'approved') as $leave) {
+            // Check if leave overlaps with current month
+            $fromDate = Carbon::parse($leave->from_date);
+            $toDate = Carbon::parse($leave->to_date);
+            
+            if ($toDate >= $currentMonthStart && $fromDate <= $currentMonthEnd) {
+                // Calculate overlap between leave dates and current month
+                $start = $fromDate->max($currentMonthStart);
+                $end = $toDate->min($currentMonthEnd);
                 $daysInMonth = $start->diffInDays($end) + 1;
                 $offDaysThisMonth += $daysInMonth;
             }
         }
+        $offDaysThisMonth = (int)$offDaysThisMonth;
 
         // Calculate annual leave statistics
-        $totalAnnualLeave = 20; // Default annual leave (can be fetched from staff table if stored there)
+        $totalAnnualLeave = 20; // Default annual leave
         $usedLeave = 0;
-        $currentYearStart = Carbon::create($currentYear, 1, 1);
-        $currentYearEnd = Carbon::create($currentYear, 12, 31);
 
-        foreach ($allLeaves->where('status', 'approved') as $leave) {
-            if ($leave->leave_type === 'Annual Leave' && $leave->from_date <= $currentYearEnd && $leave->to_date >= $currentYearStart) {
-                $daysUsed = 0;
-                // Use Carbon comparison instead of PHP max/min
-                $start = $leave->from_date->greaterThan($currentYearStart) ? $leave->from_date : $currentYearStart;
-                $end = $leave->to_date->lessThan($currentYearEnd) ? $leave->to_date : $currentYearEnd;
-                $daysUsed = $start->diffInDays($end) + 1;
-                $usedLeave += $daysUsed;
+        // Calculate used annual leave (count only the days in current year)
+        $allApprovedLeaves = $allLeaves->whereStrict('status', 'approved');
+        
+        foreach ($allApprovedLeaves as $leave) {
+            // Only count Annual Leave type
+            if ($leave->leave_type !== 'Annual Leave') {
+                continue;
+            }
+            
+            $fromDate = Carbon::parse($leave->from_date);
+            $toDate = Carbon::parse($leave->to_date);
+            $fromYear = $fromDate->format('Y');
+            $toYear = $toDate->format('Y');
+            
+            // Count only days that fall in the current year
+            if ($fromYear == $currentYear || $toYear == $currentYear) {
+                // If leave spans multiple years, only count the days in current year
+                $yearStart = Carbon::createFromFormat('Y-m-d', $currentYear . '-01-01');
+                $yearEnd = Carbon::createFromFormat('Y-m-d', $currentYear . '-12-31');
+                
+                // Calculate the overlap with current year
+                $countStart = $fromDate->max($yearStart);
+                $countEnd = $toDate->min($yearEnd);
+                
+                if ($countStart <= $countEnd) {
+                    $daysUsed = $countStart->diffInDays($countEnd) + 1;
+                    $usedLeave += $daysUsed;
+                }
             }
         }
-
-        $remainingBalance = $totalAnnualLeave - $usedLeave;
+        
+        $usedLeave = (int)$usedLeave;
+        $remainingBalance = (int)($totalAnnualLeave - $usedLeave);
 
         return view('staff_status_leave', [
             'staffName' => $staffName,
@@ -529,22 +520,22 @@ public function getPieChartData(Request $request)
             // Calculate days in the selected month for this leave request
             $leaveStart = $leave->from_date->greaterThan($startDate) ? $leave->from_date : $startDate;
             $leaveEnd = $leave->to_date->lessThan($endDate) ? $leave->to_date : $endDate;
-            $daysInMonth = $leaveStart->diffInDays($leaveEnd) + 1;
+            $daysInMonth = (int)($leaveStart->diffInDays($leaveEnd) + 1);
             $onLeaveDays += $daysInMonth;
         }
-        $stats['on_leave'] = $onLeaveDays;
+        $stats['on_leave'] = (int)$onLeaveDays;
 
         // Calculate grand total (all statuses combined)
         $grandTotal = $stats['present'] + $stats['absent'] + $stats['late'] + $stats['el'] + $stats['on_leave'] + $stats['half_day'];
 
         // Calculate percentages based on grand total
         if ($grandTotal > 0) {
-            $stats['present_percentage'] = round(($stats['present'] / $grandTotal) * 100, 1);
-            $stats['absent_percentage'] = round(($stats['absent'] / $grandTotal) * 100, 1);
-            $stats['late_percentage'] = round(($stats['late'] / $grandTotal) * 100, 1);
-            $stats['el_percentage'] = round(($stats['el'] / $grandTotal) * 100, 1);
-            $stats['on_leave_percentage'] = round(($stats['on_leave'] / $grandTotal) * 100, 1);
-            $stats['half_day_percentage'] = round(($stats['half_day'] / $grandTotal) * 100, 1);
+            $stats['present_percentage'] = (int)round(($stats['present'] / $grandTotal) * 100);
+            $stats['absent_percentage'] = (int)round(($stats['absent'] / $grandTotal) * 100);
+            $stats['late_percentage'] = (int)round(($stats['late'] / $grandTotal) * 100);
+            $stats['el_percentage'] = (int)round(($stats['el'] / $grandTotal) * 100);
+            $stats['on_leave_percentage'] = (int)round(($stats['on_leave'] / $grandTotal) * 100);
+            $stats['half_day_percentage'] = (int)round(($stats['half_day'] / $grandTotal) * 100);
         } else {
             $stats['present_percentage'] = 0;
             $stats['absent_percentage'] = 0;
@@ -565,12 +556,11 @@ public function getPieChartData(Request $request)
     private function preparePieChartData($stats)
     {
         return [
-            'labels' => ['Present', 'Absent', 'Late', 'EL', 'On Leave', 'Half Day'],
+            'labels' => ['Present', 'Absent', 'Late', 'Leave', 'Half Day'],
             'data' => [
                 $stats['present'],
                 $stats['absent'],
                 $stats['late'],
-                $stats['el'],
                 $stats['on_leave'],
                 $stats['half_day'],
             ],
@@ -578,11 +568,10 @@ public function getPieChartData(Request $request)
                 $stats['present_percentage'],
                 $stats['absent_percentage'],
                 $stats['late_percentage'],
-                $stats['el_percentage'],
                 $stats['on_leave_percentage'],
                 $stats['half_day_percentage'],
             ],
-            'colors' => ['#22c55e', '#ef4444', '#eab308', '#f97316', '#3b82f6', '#a855f7'],
+            'colors' => ['#22c55e', '#ef4444', '#eab308', '#3b82f6', '#a855f7'],
         ];
     }
 }

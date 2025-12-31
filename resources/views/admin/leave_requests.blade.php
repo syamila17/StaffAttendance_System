@@ -17,16 +17,6 @@
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto p-8">
       <div class="max-w-7xl">
-        <!-- Language Switcher -->
-        <div class="flex justify-end mb-6 gap-2">
-          <a href="{{ route('admin.leave.requests', ['lang' => 'en', 'status' => request('status', 'pending')]) }}" class="px-4 py-2 rounded-lg font-semibold transition @if(app()->getLocale() === 'en') bg-orange-600 @else bg-gray-700 hover:bg-gray-600 @endif">
-            EN
-          </a>
-          <a href="{{ route('admin.leave.requests', ['lang' => 'ms', 'status' => request('status', 'pending')]) }}" class="px-4 py-2 rounded-lg font-semibold transition @if(app()->getLocale() === 'ms') bg-orange-600 @else bg-gray-700 hover:bg-gray-600 @endif">
-            MS
-          </a>
-        </div>
-
         <h1 class="text-4xl font-bold mb-2">{{ trans('admin.leave_requests') }}</h1>
         <p class="text-gray-400 mb-8">{{ trans('admin.review_leave') }}</p>
 

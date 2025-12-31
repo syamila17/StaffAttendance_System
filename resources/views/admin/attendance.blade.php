@@ -52,8 +52,8 @@
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto p-8">
       <div class="max-w-6xl">
-        <h1 class="text-4xl font-bold mb-2">Attendance Management</h1>
-        <p class="text-gray-400 mb-8">Manage daily staff attendance</p>
+        <h1 class="text-4xl font-bold mb-2">{{ trans('admin.attendance_management') }}</h1>
+        <p class="text-gray-400 mb-8">{{ trans('admin.manage_daily_attendance') }}</p>
 
         @if(session('success'))
           <div class="bg-green-500/20 border border-green-500 text-green-300 px-4 py-3 rounded-lg mb-6">
@@ -67,7 +67,7 @@
             <input type="date" name="date" value="{{ $selectedDate }}" 
               class="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white">
             <button type="submit" class="px-6 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg transition">
-              <i class="fas fa-search mr-2"></i>Filter
+              <i class="fas fa-search mr-2"></i>{{ trans('admin.filter') }}
             </button>
           </form>
         </div>
@@ -75,23 +75,23 @@
         <!-- Stats -->
         <div class="grid grid-cols-5 gap-4 mb-8">
           <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-            <p class="text-gray-400 text-sm">Total Staff</p>
+            <p class="text-gray-400 text-sm">{{ trans('admin.total_staff') }}</p>
             <p class="text-3xl font-bold text-white">{{ $stats['total_staff'] }}</p>
           </div>
           <div class="bg-green-900/30 p-4 rounded-lg border border-green-700">
-            <p class="text-green-300 text-sm">Present</p>
+            <p class="text-green-300 text-sm">{{ trans('admin.present') }}</p>
             <p class="text-3xl font-bold text-green-300">{{ $stats['present'] }}</p>
           </div>
           <div class="bg-red-900/30 p-4 rounded-lg border border-red-700">
-            <p class="text-red-300 text-sm">Absent</p>
+            <p class="text-red-300 text-sm">{{ trans('admin.absent') }}</p>
             <p class="text-3xl font-bold text-red-300">{{ $stats['absent'] }}</p>
           </div>
           <div class="bg-yellow-900/30 p-4 rounded-lg border border-yellow-700">
-            <p class="text-yellow-300 text-sm">Late</p>
+            <p class="text-yellow-300 text-sm">{{ trans('admin.late') }}</p>
             <p class="text-3xl font-bold text-yellow-300">{{ $stats['late'] }}</p>
           </div>
           <div class="bg-blue-900/30 p-4 rounded-lg border border-blue-700">
-            <p class="text-blue-300 text-sm">Leave</p>
+            <p class="text-blue-300 text-sm">{{ trans('admin.leave') }}</p>
             <p class="text-3xl font-bold text-blue-300">{{ $stats['leave'] }}</p>
           </div>
         </div>

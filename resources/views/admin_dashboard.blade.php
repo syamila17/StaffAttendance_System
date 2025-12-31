@@ -26,10 +26,10 @@
 
         <!-- Language Switcher -->
         <div class="flex gap-1 mt-4 justify-center">
-          <a href="{{ url('/admin/dashboard?lang=en') }}" class="px-2 py-1 rounded text-xs font-semibold {{ app()->getLocale() == 'en' ? 'bg-white text-orange-700' : 'bg-white/20 text-white hover:bg-white/30' }} transition">
+          <a href="{{ route('admin.dashboard', ['lang' => 'en']) }}" class="px-2 py-1 rounded text-xs font-semibold {{ app()->getLocale() == 'en' ? 'bg-white text-orange-700' : 'bg-white/20 text-white hover:bg-white/30' }} transition">
             EN
           </a>
-          <a href="{{ url('/admin/dashboard?lang=ms') }}" class="px-2 py-1 rounded text-xs font-semibold {{ app()->getLocale() == 'ms' ? 'bg-white text-orange-700' : 'bg-white/20 text-white hover:bg-white/30' }} transition">
+          <a href="{{ route('admin.dashboard', ['lang' => 'ms']) }}" class="px-2 py-1 rounded text-xs font-semibold {{ app()->getLocale() == 'ms' ? 'bg-white text-orange-700' : 'bg-white/20 text-white hover:bg-white/30' }} transition">
             MS
           </a>
         </div>
