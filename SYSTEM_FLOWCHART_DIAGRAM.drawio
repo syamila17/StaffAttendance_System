@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2025-12-30" agent="5.0" version="24.0.0" type="device">
+  <diagram name="Staff Attendance System - Complete Flowchart" id="flowchart-diagram">
+    <mxGraphModel dx="1500" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="2800" background="none" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- HEADER SECTION -->
+        <mxCell id="header" value="STAFF ATTENDANCE MANAGEMENT SYSTEM - COMPLETE FLOWCHART" style="text;html=1;align=center;verticalAlign=top;fontSize=18;fontStyle=1;fillColor=#E3F2FD;strokeColor=#1565C0" vertex="1" parent="1">
+          <mxGeometry x="400" y="10" width="1400" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================ -->
+        <!-- SECTION 1: SYSTEM ENTRY POINT -->
+        <!-- ============================================ -->
+        <mxCell id="entry-start" value="System Start&#10;User Access localhost:8000" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fillColor=#4CAF50;fontColor=#ffffff;strokeColor=#2E7D32;strokeWidth=2" vertex="1" parent="1">
+          <mxGeometry x="850" y="80" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="entry-redirect" value="Redirect to /login" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#2196F3;fontColor=#ffffff;strokeColor=#1565C0" vertex="1" parent="1">
+          <mxGeometry x="850" y="200" width="200" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-entry1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=2;endArrow=classic;startArrow=none" edge="1" parent="1" source="entry-start" target="entry-redirect">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================ -->
+        <!-- SECTION 2: AUTHENTICATION FLOWS -->
+        <!-- ============================================ -->
+        
+        <!-- STAFF LOGIN FLOW -->
+        <mxCell id="staff-login-header" value="STAFF LOGIN FLOW" style="text;html=1;align=center;fontSize=13;fontStyle=1;fillColor=#FFF59D;strokeColor=#F57F17" vertex="1" parent="1">
+          <mxGeometry x="100" y="310" width="280" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff-login-form" value="Display Staff Login Form&#10;/login (GET)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#2196F3;fontColor=#ffffff;strokeColor=#1565C0" vertex="1" parent="1">
+          <mxGeometry x="100" y="360" width="280" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff-input" value="User Enters:&#10;Staff ID/Email + Password&#10;Language Selection (EN/MS)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#E1BEE7;strokeColor=#7B1FA2" vertex="1" parent="1">
+          <mxGeometry x="100" y="460" width="280" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff-validate-format" value="Validate Format&#10;Email OR Staff ID?" style="diamond;whiteSpace=wrap;html=1;fontSize=10;fillColor=#FFE082;strokeColor=#F57F17" vertex="1" parent="1">
+          <mxGeometry x="100" y="590" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff-query-db" value="Query Database:&#10;Staff table" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#A5D6A7;strokeColor=#2E7D32" vertex="1" parent="1">
+          <mxGeometry x="100" y="740" width="280" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff-found-check" value="Staff Record&#nFound?" style="diamond;whiteSpace=wrap;html=1;fontSize=10;fillColor=#FFE082;strokeColor=#F57F17" vertex="1" parent="1">
+          <mxGeometry x="100" y="860" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff-pwd-verify" value="Verify Password&#n(Hash Compare)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#A5D6A7;strokeColor=#2E7D32" vertex="1" parent="1">
+          <mxGeometry x="100" y="1010" width="280" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff-pwd-check" value="Password&#nCorrect?" style="diamond;whiteSpace=wrap;html=1;fontSize=10;fillColor=#FFE082;strokeColor=#F57F17" vertex="1" parent="1">
+          <mxGeometry x="100" y="1130" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff-session-create" value="Create Session:&#10;staff_id, staff_name,&#nstaff_email, login_time" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#A5D6A7;strokeColor=#2E7D32" vertex="1" parent="1">
+          <mxGeometry x="100" y="1280" width="280" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff-login-success" value="Login Success&#nRedirect to&#n/staff_dashboard" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#4CAF50;fontColor=#ffffff;strokeColor=#2E7D32" vertex="1" parent="1">
+          <mxGeometry x="100" y="1420" width="280" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff-login-fail" value="Login Failed&#nShow Error Message&#nReturn to Login" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#F44336;fontColor=#ffffff;strokeColor=#C62828" vertex="1" parent="1">
+          <mxGeometry x="100" y="1550" width="280" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- STAFF LOGIN ARROWS -->
+        <mxCell id="arrow-staff1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1" source="entry-redirect" target="staff-login-form">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="350" y="225" as="sourcePoint" />
+            <mxPoint x="240" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow-staff2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1" source="staff-login-form" target="staff-input">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-staff3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1" source="staff-input" target="staff-validate-format">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-staff4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1" source="staff-validate-format" target="staff-query-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-staff5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1" source="staff-query-db" target="staff-found-check">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-staff6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2E7D32;strokeWidth=1.5;label=YES" edge="1" parent="1" source="staff-found-check" target="staff-pwd-verify">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="960" as="sourcePoint" />
+            <mxPoint x="240" y="1010" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow-staff7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#C62828;strokeWidth=1.5;label=NO" edge="1" parent="1" source="staff-found-check" target="staff-login-fail">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="370" y="905" as="sourcePoint" />
+            <mxPoint x="370" y="1585" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow-staff8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1" source="staff-pwd-verify" target="staff-pwd-check">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-staff9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2E7D32;strokeWidth=1.5;label=YES" edge="1" parent="1" source="staff-pwd-check" target="staff-session-create">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="240" y="1220" as="sourcePoint" />
+            <mxPoint x="240" y="1280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow-staff10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#C62828;strokeWidth=1.5;label=NO" edge="1" parent="1" source="staff-pwd-check" target="staff-login-fail">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="370" y="1175" as="sourcePoint" />
+            <mxPoint x="370" y="1585" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow-staff11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;strokeWidth=1.5" edge="1" parent="1" source="staff-session-create" target="staff-login-success">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================ -->
+        <!-- SECTION 3: ADMIN LOGIN FLOW (PARALLEL) -->
+        <!-- ============================================ -->
+
+        <mxCell id="admin-login-header" value="ADMIN LOGIN FLOW" style="text;html=1;align=center;fontSize=13;fontStyle=1;fillColor=#FFF59D;strokeColor=#F57F17" vertex="1" parent="1">
+          <mxGeometry x="440" y="310" width="280" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="admin-login-form" value="Display Admin Login Form&#10;/admin_login (GET)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#2196F3;fontColor=#ffffff;strokeColor=#1565C0" vertex="1" parent="1">
+          <mxGeometry x="440" y="360" width="280" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="admin-input" value="User Enters:&#10;Admin Email + Password&#10;Language Selection (EN/MS)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#E1BEE7;strokeColor=#7B1FA2" vertex="1" parent="1">
+          <mxGeometry x="440" y="460" width="280" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="admin-query-db" value="Query Database:&#10;Admin table by email" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#A5D6A7;strokeColor=#2E7D32" vertex="1" parent="1">
+          <mxGeometry x="440" y="590" width="280" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="admin-found-check" value="Admin Record&#nFound?" style="diamond;whiteSpace=wrap;html=1;fontSize=10;fillColor=#FFE082;strokeColor=#F57F17" vertex="1" parent="1">
+          <mxGeometry x="440" y="710" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="admin-pwd-verify" value="Verify Password&#n(Hash Compare)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#A5D6A7;strokeColor=#2E7D32" vertex="1" parent="1">
+          <mxGeometry x="440" y="860" width="280" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="admin-pwd-check" value="Password&#nCorrect?" style="diamond;whiteSpace=wrap;html=1;fontSize=10;fillColor=#FFE082;strokeColor=#F57F17" vertex="1" parent="1">
+          <mxGeometry x="440" y="980" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="admin-session-create" value="Create Session:&#10;admin_id, admin_name,&#nadmin_email, login_time" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#A5D6A7;strokeColor=#2E7D32" vertex="1" parent="1">
+          <mxGeometry x="440" y="1130" width="280" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="admin-login-success" value="Login Success&#nRedirect to&#n/admin_dashboard" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#4CAF50;fontColor=#ffffff;strokeColor=#2E7D32" vertex="1" parent="1">
+          <mxGeometry x="440" y="1270" width="280" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="admin-login-fail" value="Login Failed&#nShow Error Message&#nReturn to Login" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#F44336;fontColor=#ffffff;strokeColor=#C62828" vertex="1" parent="1">
+          <mxGeometry x="440" y="1400" width="280" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ADMIN LOGIN ARROWS -->
+        <mxCell id="arrow-admin1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor:#000000;strokeWidth=1.5" edge="1" parent="1" source="entry-redirect" target="admin-login-form">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="850" y="225" as="sourcePoint" />
+            <mxPoint x="580" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow-admin2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor:#000000;strokeWidth=1.5" edge="1" parent="1" source="admin-login-form" target="admin-input">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-admin3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor:#000000;strokeWidth=1.5" edge="1" parent="1" source="admin-input" target="admin-query-db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-admin4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor:#000000;strokeWidth=1.5" edge="1" parent="1" source="admin-query-db" target="admin-found-check">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-admin5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor:#2E7D32;strokeWidth=1.5;label=YES" edge="1" parent="1" source="admin-found-check" target="admin-pwd-verify">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-admin6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor:#C62828;strokeWidth=1.5;label=NO" edge="1" parent="1" source="admin-found-check" target="admin-login-fail">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="810" y="755" as="sourcePoint" />
+            <mxPoint x="810" y="1435" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow-admin7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor:#000000;strokeWidth=1.5" edge="1" parent="1" source="admin-pwd-verify" target="admin-pwd-check">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-admin8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor:#2E7D32;strokeWidth=1.5;label=YES" edge="1" parent="1" source="admin-pwd-check" target="admin-session-create">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow-admin9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor:#C62828;strokeWidth=1.5;label=NO" edge="1" parent="1" source="admin-pwd-check" target="admin-login-fail">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="810" y="1025" as="sourcePoint" />
+            <mxPoint x="810" y="1435" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow-admin10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor:#000000;strokeWidth=1.5" edge="1" parent="1" source="admin-session-create" target="admin-login-success">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================ -->
+        <!-- SECTION 4: STAFF DASHBOARD & MAIN FLOWS -->
+        <!-- ============================================ -->
+
+        <mxCell id="staff-dashboard-header" value="STAFF PORTAL - MAIN OPERATIONS" style="text;html=1;align=center;fontSize=13;fontStyle=1;fillColor=#C8E6C9;strokeColor=#2E7D32" vertex="1" parent="1">
+          <mxGeometry x="800" y="310" width="400" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff-dashboard-display" value="Staff Dashboard Display&#n/staff_dashboard" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#81C784;fontColor=#ffffff;strokeColor=#2E7D32" vertex="1" parent="1">
+          <mxGeometry x="800" y="360" width="400" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff-dashboard-data" value="Query & Display:&#n- Today's Attendance Status&#n- Monthly Stats (Present/Absent/Late)&#n- Leave Balance\\n- Leave Requests Status\\n- Profile Info" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#C8E6C9;strokeColor=#2E7D32" vertex="1" parent="1">
+          <mxGeometry x="800" y="460" width="400" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff-options" value="Choose Action" style="diamond;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFF59D;strokeColor=#F57F17" vertex="1" parent="1">
+          <mxGeometry x="850" y="610" width="300" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- STAFF OPTION 1: CHECK-IN/CHECK-OUT -->
+        <mxCell id="staff-checkin-header" value="1. CHECK-IN/CHECK-OUT FLOW" style="text;html=1;align=center;fontSize=12;fontStyle=1;fillColor=#FFCCBC;strokeColor=#FF5722" vertex="1" parent="1">
+          <mxGeometry x="1350" y="310" width="280" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff-checkin-form" value="Display Attendance Form&#n/attendance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#FFAB91;strokeColor=#E64A19" vertex="1" parent="1">
+          <mxGeometry x="1350" y="360" width="280" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff-checkin-check-leave" value="Check for Approved\\nLeave Today?" style="diamond;whiteSpace=wrap;html=1;fontSize=10;fillColor=#FFE082;strokeColor=#F57F17" vertex="1" parent="1">
+          <mxGeometry x="1350" y="450" width="280" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="staff-checkin-disabled" value="Show Yellow Alert:\\n'You are on\\napproved leave'\\nDisable Check-in/out" style="rounded=1;whiteSpace=wrap;html=1;fontSize=9;fillColor=#FFF59D;strokeColor=#F57F17" vertex="1" parent="1">
+          <mxGeometry x="1350" y="600" width="280" height="70" as="geometry" />
+        
