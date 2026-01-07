@@ -40,16 +40,17 @@ class AdminAttendanceController extends Controller
         // Calculate stats excluding staff on leave
         $allStaff = $staff->count();
         $presentCount = $attendanceData->where('status', 'present')->count();
+        $halfDayCount = $attendanceData->where('status', 'half day')->count();
         $absentCount = $attendanceData->where('status', 'absent')->count();
         $lateCount = $attendanceData->where('status', 'late')->count();
         $leaveCount = $attendanceData->where('status', 'leave')->count();
         
-        // Actual working count (present + late) = actual attendance
-        $actualAttendance = $presentCount + $lateCount;
+        // Actual attendance count (present + half day + late) = actual attendance
+        $actualAttendance = $presentCount + $halfDayCount + $lateCount;
 
         $stats = [
             'total_staff' => $allStaff,
-            'present' => $presentCount,
+            'present' => $presentCount + $halfDayCount, // half day counts as present in stats
             'absent' => $absentCount,
             'late' => $lateCount,
             'leave' => $leaveCount,
@@ -107,7 +108,7 @@ class AdminAttendanceController extends Controller
         $request->validate([
             'staff_id' => 'required|exists:staff,staff_id',
             'attendance_date' => 'required|date',
-            'status' => 'required|in:present,absent,late,leave',
+            'status' => 'required|in:present,absent,late,leave,half day',
             'check_in_time' => 'nullable|date_format:H:i',
             'check_out_time' => 'nullable|date_format:H:i',
         ]);

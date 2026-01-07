@@ -101,6 +101,7 @@ class StaffController extends Controller
         'todayAttendance',
         'totalPresent',
         'totalAbsent',
+        'totalLate',
         'totalEL',
         'totalOnLeave',
         'totalHalfDay',

@@ -29,6 +29,7 @@ return [
     'current' => 'Current',
     'total_present' => 'Total Present',
     'total_absent' => 'Total Absent',
+    'total_late' => 'Total Late',
     'total_half_day' => 'Total Half Day',
     'total_on_leave' => 'Total On Leave',
     'of_month' => 'of month',

@@ -78,9 +78,24 @@ class AttendanceController extends Controller
         $currentTime = date('H:i:s');
         
         // Determine status based on check-in time
-        // If check-in is after 12:00 PM (12:00:00), mark as half day
-        $checkInHour = (int)date('H');
-        $status = ($checkInHour >= 12) ? 'half day' : 'present';
+        // Logic:
+        // 12pm-2pm (12:00:00 - 13:59:59): present (marked as 'half day' internally)
+        // 2pm-5pm (14:00:00 - 16:59:59): late (marked as 'late')
+        // After 5pm (17:00:00+): absent (marked as 'absent')
+        $checkInTime = Carbon::createFromFormat('H:i:s', $currentTime);
+        $noon = Carbon::createFromTimeString('12:00:00');
+        $twopm = Carbon::createFromTimeString('14:00:00');
+        $fivepm = Carbon::createFromTimeString('17:00:00');
+        
+        if ($checkInTime->greaterThanOrEqualTo($noon) && $checkInTime->lessThan($twopm)) {
+            $status = 'half day'; // 12pm-2pm: present (will be counted as present in admin)
+        } elseif ($checkInTime->greaterThanOrEqualTo($twopm) && $checkInTime->lessThan($fivepm)) {
+            $status = 'late'; // 2pm-5pm: late (will be counted as present in admin)
+        } elseif ($checkInTime->greaterThanOrEqualTo($fivepm)) {
+            $status = 'absent'; // After 5pm: absent
+        } else {
+            $status = 'present'; // Before 12pm: present
+        }
         
         $attendance = Attendance::firstOrCreate(
             [

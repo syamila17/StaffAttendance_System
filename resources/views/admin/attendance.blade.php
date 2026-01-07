@@ -122,6 +122,7 @@
                       <span class="px-3 py-1 rounded-full text-sm capitalize
                         @if($attendance->status === 'present') bg-green-500/20 text-green-300
                         @elseif($attendance->status === 'late') bg-yellow-500/20 text-yellow-300
+                        @elseif($attendance->status === 'half day') bg-green-500/20 text-green-300
                         @elseif($attendance->status === 'leave') bg-blue-500/20 text-blue-300
                         @else bg-red-500/20 text-red-300 @endif">
                         {{ $attendance->status }}
@@ -174,6 +175,7 @@
             <option value="present" class="text-black">Present</option>
             <option value="absent" class="text-black">Absent</option>
             <option value="late" class="text-black">Late</option>
+            <option value="half day" class="text-black">Half Day</option>
             <option value="leave" class="text-black">Leave</option>
           </select>
         </div>
